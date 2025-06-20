@@ -15,58 +15,71 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    
+
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
-    
+
     - name: Install uv
       uses: astral-sh/setup-uv@v6
       with:
         version: "latest"
-    
+
     - name: Install dependencies
       run: |
-        uv pip install nox
-        uv pip install -e ".[dev,tests]"
-    
+        uv venv
+        uv sync --dev
+
     - name: Run linting
-      run: nox -s lint
-    
+      run: |
+        source .venv/bin/activate
+        nox -s lint
+
     - name: Run formatting check
-      run: nox -s format_code
-    
+      run: |
+        source .venv/bin/activate
+        nox -s format_code
+
     - name: Run type checking
-      run: nox -s typing
-    
+      run: |
+        source .venv/bin/activate
+        nox -s typing
+
     - name: Run tests
-      run: nox -s test
-    
+      run: |
+        source .venv/bin/activate
+        nox -s test
+
     - name: Run security checks
-      run: nox -s security
+      run: |
+        source .venv/bin/activate
+        nox -s security
 
   docs:
     runs-on: ubuntu-latest
     needs: test
-    
+
     steps:
     - uses: actions/checkout@v4
-    
+
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
         python-version: "3.12"
-    
+
     - name: Install uv
       uses: astral-sh/setup-uv@v6
       with:
         version: "latest"
-    
+
     - name: Install dependencies
       run: |
-        uv pip install nox
-        uv pip install -e ".[docs]"
-    
+        uv venv
+        source .venv/bin/activate
+        uv sync --extra docs
+
     - name: Build documentation
-      run: nox -s docs 
+      run: |
+        source .venv/bin/activate
+        nox -s docs
