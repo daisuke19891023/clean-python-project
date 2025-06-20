@@ -124,6 +124,8 @@ exclude = [
     "build",
     "dist",
 ]
+venvPath = "."
+venv = ".venv"
 typeCheckingMode = "strict"
 useLibraryCodeForTypes = true
 reportMissingImports = true

@@ -88,13 +88,6 @@ def typing(session: Session) -> None:
     session.run("pyright")
 
 
-@nox.session(python=["3.12"], tags=["pyright"])
-def pyright(session: Session) -> None:
-    """Run Pyright type checking."""
-    session.install("-c", constraints(session).as_posix(), "pyright")
-    session.run("pyright")
-
-
 @nox.session(python=["3.12"], tags=["test"])
 def test(session: Session) -> None:
     """Run pytest if test target files exist in src directory.
@@ -132,6 +125,7 @@ def docs(session: Session) -> None:
 def ci(session: Session) -> None:
     """Run all CI checks: lint, format, typing, test, security."""
     session.notify("lint")
+    session.notify("sort")
     session.notify("format_code")
     session.notify("typing")
     session.notify("test")
@@ -142,13 +136,7 @@ def ci(session: Session) -> None:
 def all_checks(session: Session) -> None:
     """Run all quality checks.
 
-    lint, format_code, sort, typing, pyright, test, security, docs.
+    ci, docs.
     """
-    session.notify("lint")
-    session.notify("format_code")
-    session.notify("sort")
-    session.notify("typing")
-    session.notify("pyright")
-    session.notify("test")
-    session.notify("security")
+    session.notify("ci")
     session.notify("docs")
