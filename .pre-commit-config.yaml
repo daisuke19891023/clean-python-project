@@ -13,16 +13,13 @@ repos:
       - id: prettier
         files: "\\.(md|yml|yaml|json|toml)$"
 
-  - repo: https://github.com/psf/black
-    rev: 24.1.1
+  - repo: local
     hooks:
-      - id: black
-        stages: [commit]
-
-  - repo: https://github.com/pycqa/isort
-    rev: 5.13.2
-    hooks:
-      - id: isort
+      - id: pip-audit
+        name: pip-audit
+        entry: pip-audit
+        language: system
+        types: [python]
         stages: [commit]
 
   - repo: https://github.com/PyCQA/bandit
