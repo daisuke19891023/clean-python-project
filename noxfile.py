@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import pathlib
 import platform
 import sys
@@ -12,7 +13,6 @@ from nox.sessions import Session
 #     session.install("-c", constraints(session).as_posix(), ".[AAA]")  # noqa: ERA001
 #     session.run("EXAMPLE_COMMAND")    # noqa: ERA001
 
-nox.options.python = "3.12"
 nox.options.default_venv_backend = "uv"
 
 
@@ -60,15 +60,27 @@ def lint(session: Session) -> None:
 
 
 @nox.session(python=["3.12"], tags=["format"])
-def formatting(session: Session) -> None:
+def format_code(session: Session) -> None:
     session.install("-c", constraints(session).as_posix(), "ruff")
     session.run("ruff", "format")
 
 
+@nox.session(python=["3.12"], tags=["sort"])
+def sort(session: Session) -> None:
+    session.install("-c", constraints(session).as_posix(), "ruff")
+    session.run("ruff", "check", "--select", "I", "--fix")
+
+
 @nox.session(python=["3.12"], tags=["typing"])
 def typing(session: Session) -> None:
-    session.install("-c", constraints(session).as_posix(), ".[typing]")
-    session.run("mypy")
+    session.install("-c", constraints(session).as_posix(), ".[dev]")
+    session.run("pyright")
+
+
+@nox.session(python=["3.12"], tags=["pyright"])
+def pyright(session: Session) -> None:
+    session.install("-c", constraints(session).as_posix(), "pyright")
+    session.run("pyright")
 
 
 @nox.session(python=["3.12"], tags=["test"])
@@ -84,7 +96,12 @@ def test(session: Session) -> None:
     session.run("pytest")
 
 
-@nox.session(python=["3.12"], venv_backend="uv", tags=["security"])
-def security(session: Session) -> None:
-    session.install("-c", constraints(session).as_posix(), ".[dev]")
-    session.run("bandit", "-r", "src")
+@nox.session(python=["3.12"], tags=["all"])
+def all_checks(session: Session) -> None:
+    """Run all quality checks: lint, format_code, sort, typing, pyright, test"""
+    session.notify("lint")
+    session.notify("format_code")
+    session.notify("sort")
+    session.notify("typing")
+    session.notify("pyright")
+    session.notify("test")

@@ -7,11 +7,9 @@ requires-python = ">=3.12"
 dependencies = [
     "load-dotenv>=0.1.0",
     "pydantic>=2.9.2",
+    "pydantic-settings>=2.9.1",
 ]
 [project.optional-dependencies]
-typing = [
-    "mypy>=1.11.2",
-]
 docs = [
     "sphinx>=8.1.2",
 ]
@@ -29,7 +27,6 @@ openai = [
 
 [tool.uv]
 dev-dependencies = [
-    "bandit>=1.7.10",
     "nox>=2024.10.9",
     "pre-commit>=4.0.1",
     "ruff>=0.6.9",
@@ -109,14 +106,21 @@ skip-magic-trailing-comma = false
 # Like Black, automatically detect the appropriate line ending.
 line-ending = "auto"
 
-[tool.mypy]
-files = [ "*.py"]
-strict = true
-pretty = true
-disallow_untyped_defs = "True"
-ignore_missing_imports = true
-exclude = ["notebooks", "examples", "example_data", "lsrc/pydantic"]
-disable_error_code = ["misc"]
+[tool.pyright]
+include = ["src"]
+exclude = [
+    "**/node_modules",
+    "**/__pycache__",
+    ".venv",
+    "venv",
+    ".nox",
+    "build",
+    "dist",
+]
+typeCheckingMode = "strict"
+useLibraryCodeForTypes = true
+reportMissingImports = true
+reportMissingTypeStubs = false
 
 [tool.pytest.ini_options]
 pythonpath = [ "src"]
@@ -127,4 +131,9 @@ addopts = "-v --cov=src"
 markers = [
   "slow: marks tests as slow (deselect with '-m \"not slow\"')",
   "integration: marks integration tests"
+]
+
+[dependency-groups]
+dev = [
+    "pyright>=1.1.402",
 ]

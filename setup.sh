@@ -72,4 +72,5 @@ info "pre-commitを設定しています..."
 uv run pre-commit install || error "pre-commitの設定に失敗しました"
 success "pre-commitが設定されました"
 
-info "セットアップが完了しました"
+info "ローカル環境のセットアップが完了しました"
+info "DevContainerを使用する場合は、VS Codeで「Reopen in Container」を選択してください"
