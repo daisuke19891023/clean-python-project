@@ -233,6 +233,20 @@
                 "clear": false
             },
             "problemMatcher": []
+        },
+        {
+            "label": "nox: lint",
+            "type": "shell",
+            "command": "nox -s lint",
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "nox: test",
+            "type": "shell",
+            "command": "nox -s tests",
+            "group": "test",
+            "problemMatcher": []
         }
     ],
     "inputs": [

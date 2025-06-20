@@ -1,8 +1,159 @@
+# YOUR_PROJECT_NAME
+
+Add your description here.
+
+## Features
+
+-   Modern Python project structure with uv and nox
+-   Comprehensive code quality tools (Ruff, Black, isort, Pyright)
+-   Security scanning (Bandit, pip-audit, Safety)
+-   Automated testing with pytest and coverage
+-   Documentation with MkDocs Material
+-   Pre-commit hooks for code quality
+-   Conventional commits with Commitizen
+-   GitHub Actions CI/CD pipeline
+-   Docker support
+
+## Quick Start
+
+### Prerequisites
+
+-   Python 3.12+
+-   uv (Python package manager)
+
+### Installation
+
+```bash
+# Clone the repository
+git clone <your-repo-url>
+cd YOUR_PROJECT_NAME
+
+# Install dependencies
+uv pip install -e ".[dev]"
+
+# Install pre-commit hooks
+pre-commit install
+```
+
+### Development Commands
+
+| Command              | Description                    |
+| -------------------- | ------------------------------ |
+| `nox -s lint`        | Run linting with Ruff          |
+| `nox -s format_code` | Format code with Ruff          |
+| `nox -s typing`      | Run type checking with Pyright |
+| `nox -s test`        | Run tests with coverage        |
+| `nox -s security`    | Run security checks            |
+| `nox -s docs`        | Build documentation            |
+| `nox -s ci`          | Run all CI checks              |
+| `nox -s all_checks`  | Run all quality checks         |
+
+### Testing
+
+```bash
+# Run tests with coverage
+nox -s test
+
+# Run tests in parallel
+pytest -n auto
+
+# Run specific test markers
+pytest -m "not slow"
+```
+
+### Documentation
+
+```bash
+# Build documentation
+nox -s docs
+
+# Serve documentation locally
+mkdocs serve
+```
+
+### Docker
+
+```bash
+# Build Docker image
+docker build -t your-project-name .
+
+# Run Docker container
+docker run your-project-name
+```
+
+## Project Structure
+
+```
+YOUR_PROJECT_NAME/
+├── src/                    # Source code
+├── tests/                  # Test files
+├── docs/                   # Documentation
+├── .github/                # GitHub configuration
+├── .vscode/                # VS Code settings
+├── constraints/            # Dependency constraints
+├── pyproject.toml          # Project configuration
+├── noxfile.py              # Nox tasks
+├── mkdocs.yml              # Documentation configuration
+├── Dockerfile              # Docker configuration
+└── README.md               # This file
+```
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Run quality checks: `nox -s all_checks`
+5. Commit using conventional commits: `cz commit`
+6. Create a pull request
+
+## Development Workflow
+
+### Code Quality
+
+The project uses several tools to maintain code quality:
+
+-   **Ruff**: Fast Python linter and formatter
+-   **Black**: Uncompromising code formatter
+-   **isort**: Import sorting
+-   **Pyright**: Type checking
+-   **Bandit**: Security linting
+-   **pip-audit**: Dependency vulnerability scanning
+-   **Safety**: Commercial-grade security scanning
+
+### Pre-commit Hooks
+
+Pre-commit hooks automatically run quality checks before each commit:
+
+```bash
+# Install pre-commit hooks
+pre-commit install
+
+# Run all hooks manually
+pre-commit run --all-files
+```
+
+### Conventional Commits
+
+The project uses conventional commits for versioning:
+
+```bash
+# Use Commitizen for commits
+cz commit
+
+# Bump version
+cz bump
+```
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
 # 開発環境セットアップ手順
 
 ## 手動セットアップ
 
-### pipxのインストール（入っていない場合）
+### pipx のインストール（入っていない場合）
 
 ```bash
 sudo apt update
@@ -10,17 +161,17 @@ sudo apt install pipx
 pipx ensurepath
 ```
 
-詳細は[pipxの公式ドキュメント](https://pipx.pypa.io/stable/installation/)を参照してください。
+詳細は[pipx の公式ドキュメント](https://pipx.pypa.io/stable/installation/)を参照してください。
 
-### uvのインストール
+### uv のインストール
 
 ```bash
 pipx install uv
 ```
 
-詳細は[uvの公式ドキュメント](https://docs.astral.sh/uv/getting-started/installation/#configuring-installation)を参照してください。
+詳細は[uv の公式ドキュメント](https://docs.astral.sh/uv/getting-started/installation/#configuring-installation)を参照してください。
 
-### 対象のPythonバージョンのインストール
+### 対象の Python バージョンのインストール
 
 ```bash
 uv python install [TARGET_PYTHON_VERSION]
@@ -38,7 +189,7 @@ uv venv
 uv sync
 ```
 
-### pre-commitの設定
+### pre-commit の設定
 
 ```bash
 uv run pre-commit install
@@ -46,7 +197,7 @@ uv run pre-commit install
 
 ここまでは`setup.sh`で実行できます
 
-### noxの実行
+### nox の実行
 
 ```bash
 uv run nox
@@ -68,7 +219,7 @@ deactivate
 
 環境のセットアップを自動化するために、`setup.sh`スクリプトを用意しています。
 
-### setup.shの使用方法
+### setup.sh の使用方法
 
 このスクリプトを使用することで、開発環境のセットアップを簡単に行うことができます。
 
@@ -76,18 +227,18 @@ deactivate
 
 2. スクリプトに実行権限を付与します：
 
-   ```bash
-   chmod +x setup.sh
-   ```
+    ```bash
+    chmod +x setup.sh
+    ```
 
 3. スクリプトを実行します：
 
-   ```bash
-   ./setup.sh
-   ```
+    ```bash
+    ./setup.sh
+    ```
 
 注意事項：
-- スクリプトはsudoコマンドを使用するため、実行時にパスワードの入力を求められる場合があります。
-- Pythonのバージョンインストール行はデフォルトでコメントアウトされています。使用する場合は、スクリプトを編集し、適切なバージョン番号を指定してください。
-- 仮想環境の有効化と終了は、スクリプト実行後に手動で行う必要があります。
 
+-   スクリプトは sudo コマンドを使用するため、実行時にパスワードの入力を求められる場合があります。
+-   Python のバージョンインストール行はデフォルトでコメントアウトされています。使用する場合は、スクリプトを編集し、適切なバージョン番号を指定してください。
+-   仮想環境の有効化と終了は、スクリプト実行後に手動で行う必要があります。

@@ -46,4 +46,9 @@ if uv pip list | grep -q pre-commit; then
     uv run -- pre-commit install
 fi
 
+# Git設定
+echo "Setting up Git configuration..."
+git config --global user.name "DevContainer User"
+git config --global user.email "devcontainer@example.com"
+
 echo "FINISH DevContainer Setup"

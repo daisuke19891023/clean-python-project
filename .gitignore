@@ -162,3 +162,22 @@ cython_debug/
 #.idea/
 
 uv.lock
+
+# --- Virtual envs & uv cache -------------------------------
+.venv/
+.uv/
+
+# --- Tooling -----------------------------------------------
+.nox/
+coverage.xml
+htmlcov/
+
+# --- VS Code -----------------------------------------------
+.vscode/*        # except settings/launch/tasks
+!.vscode/settings.json
+!.vscode/launch.json
+!.vscode/tasks.json
+
+# --- OS -----------------------------------------------------
+.DS_Store
+Thumbs.db
