@@ -29,8 +29,8 @@ jobs:
     - name: Install dependencies
       run: |
         uv venv
-        uv pip install nox
-        uv pip install -e ".[dev,tests]"
+        source .venv/bin/activate
+        uv sync --dev
 
     - name: Run linting
       run: nox -s lint
@@ -66,8 +66,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        uv pip install nox
-        uv pip install -e ".[docs]"
+        uv sync --extra docs
 
     - name: Build documentation
       run: nox -s docs
