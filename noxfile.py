@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Nox configuration for the project."""
 
 import pathlib
@@ -117,11 +116,9 @@ def security(session: Session) -> None:
         constraints(session).as_posix(),
         "bandit",
         "pip-audit",
-        "safety",
     )
     session.run("bandit", "-r", "src")
     session.run("pip-audit")
-    session.run("safety", "check", "--full-report")
 
 
 @nox.session(python=["3.12"], tags=["docs"])
