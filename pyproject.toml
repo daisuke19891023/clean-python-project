@@ -46,7 +46,7 @@ target-version = "py312"
 
 [tool.ruff.lint]
 select = ["ALL"]
-ignore = [] # Keep it minimal for placeholders
+ignore = ["D203", "D213"] # Keep it minimal for placeholders
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**/*.py" = ["S101"]
