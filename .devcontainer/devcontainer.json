@@ -19,50 +19,6 @@
   ],
   "customizations": {
     "vscode": {
-      "settings": {
-        "editor.renderWhitespace": "all",
-        "python.defaultInterpreterPath": "${containerWorkspaceFolder}/.venv/bin/python",
-        "python.terminal.activateEnvironment": true,
-        "python.packageManager": "uv",
-
-        "[python]": {
-          "editor.defaultFormatter": "charliermarsh.ruff",
-          "editor.formatOnSave": true,
-          "editor.codeActionsOnSave": {
-            "source.fixAll": true,
-            "source.organizeImports": true
-          }
-        },
-        "python.testing.pytestArgs": ["tests", "--capture=tee-sys", "-vv"],
-        "python.testing.pytestEnabled": true,
-        "python.analysis.autoImportCompletions": true,
-        "python.analysis.inlayHints.functionReturnTypes": true,
-        "python.analysis.inlayHints.pytestParameters": true,
-        "python.analysis.inlayHints.variableTypes": true,
-        "python.analysis.typeCheckingMode": "basic",
-        "coverage-gutters.showLineCoverage": true,
-        "coverage-gutters.showRulerCoverage": true,
-        "coverage-gutters.coverageFileNames": [".pytest_cache/coverage.xml"],
-        "[json][jsonrc]": {
-          "editor.quickSuggestions": {
-            "strings": true
-          },
-          "editor.defaultFormatter": "esbenp.prettier-vscode",
-          "editor.formatOnSave": true,
-          "editor.codeActionsOnSave": {
-            "source.fixAll": true
-          },
-          "gitlens.codeLens.scopes": ["document"]
-        },
-        "[toml]": {
-          "editor.defaultFormatter": "esbenp.prettier-vscode",
-          "editor.formatOnSave": true
-        },
-        "[markdown]": {
-          "editor.defaultFormatter": "esbenp.prettier-vscode",
-          "editor.formatOnSave": true
-        }
-      },
       "extensions": [
         "esbenp.prettier-vscode",
         "GitHub.copilot",
