@@ -102,7 +102,7 @@ def test(session: Session) -> None:
 @nox.session(python=["3.12"], tags=["security"])
 def security(session: Session) -> None:
     """Run security checks: bandit, pip-audit, safety"""
-    session.install("-c", constraints(session).as_posix(), ".[dev]")
+    session.install("-c", constraints(session).as_posix(), "bandit", "pip-audit", "safety")
     session.run("bandit", "-r", "src")
     session.run("pip-audit")
     session.run("safety", "check", "--full-report")
