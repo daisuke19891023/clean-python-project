@@ -29,23 +29,32 @@ jobs:
     - name: Install dependencies
       run: |
         uv venv
-        source .venv/bin/activate
         uv sync --dev
 
     - name: Run linting
-      run: nox -s lint
+      run: |
+        source .venv/bin/activate
+        nox -s lint
 
     - name: Run formatting check
-      run: nox -s format_code
+      run: |
+        source .venv/bin/activate
+        nox -s format_code
 
     - name: Run type checking
-      run: nox -s typing
+      run: |
+        source .venv/bin/activate
+        nox -s typing
 
     - name: Run tests
-      run: nox -s test
+      run: |
+        source .venv/bin/activate
+        nox -s test
 
     - name: Run security checks
-      run: nox -s security
+      run: |
+        source .venv/bin/activate
+        nox -s security
 
   docs:
     runs-on: ubuntu-latest
@@ -66,7 +75,11 @@ jobs:
 
     - name: Install dependencies
       run: |
+        uv venv
+        source .venv/bin/activate
         uv sync --extra docs
 
     - name: Build documentation
-      run: nox -s docs
+      run: |
+        source .venv/bin/activate
+        nox -s docs
