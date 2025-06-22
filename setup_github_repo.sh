@@ -10,10 +10,12 @@ echo "- Protect the main branch (require PR reviews, prevent force pushes, etc.)
 echo "- Enable issue and pull request templates guidance"
 echo "- Enable vulnerability alerts"
 echo "- Enable automated security fixes (Dependabot)"
+echo "- Configure branch protection to require CI checks and up-to-date branches"
 echo ""
 echo "Prerequisites:"
 echo "- GitHub CLI ('gh') must be installed and authenticated."
 echo "- You must have admin rights to the repository you want to configure."
+echo "- CI workflow (.github/workflows/ci.yml) should already exist."
 echo "--------------------------------"
 
 # Function to check if gh CLI is installed and user is logged in
@@ -53,38 +55,73 @@ get_repo_info() {
   echo ""
 }
 
-# Function to protect the main branch
+# Function to protect the main branch with CI requirements
 protect_main_branch() {
   echo "⏳ Attempting to protect the main branch for ${REPO_OWNER}/${REPO_NAME}..."
 
-  gh api \
-    --method PUT \
-    -H "Accept: application/vnd.github.v3+json" \
-    "/repos/${REPO_OWNER}/${REPO_NAME}/branches/main/protection" \
-    -f allow_force_pushes=false \
-    -f allow_deletions=false \
-    -f enforce_admins=true \
-    --slurpfile required_pull_request_reviews <(echo '{
-      "dismiss_stale_reviews": true,
-      "require_code_owner_reviews": false,
-      "required_approving_review_count": 1
-    }') \
-    -f required_status_checks=null \
-    -f restrictions=null \
-    --silent
+  # Check if CI workflow exists
+  if [[ ! -f ".github/workflows/ci.yml" ]]; then
+    echo "⚠️ WARNING: CI workflow file (.github/workflows/ci.yml) not found."
+    echo "   Branch protection will be set without specific CI status checks."
+    echo "   You can manually configure status checks later in GitHub repository settings."
+    # Set status_checks to empty array if no CI workflow
+    CONTEXTS='[]'
+  else
+    echo "✓ Found existing CI workflow file: .github/workflows/ci.yml"
+    # Set status_checks to require CI if workflow exists
+    # Based on ci.yml: only test job is required (docs is optional)
+    CONTEXTS='["test"]'
+  fi
 
-  if [ $? -eq 0 ]; then
+  # Get GitHub token from gh CLI
+  GITHUB_TOKEN=$(gh auth token)
+
+  # Create JSON payload (minimal required fields)
+  JSON_PAYLOAD=$(cat <<EOF
+{
+  "required_status_checks": {
+    "strict": true,
+    "contexts": ${CONTEXTS}
+  },
+  "enforce_admins": true,
+  "required_pull_request_reviews": {
+    "required_approving_review_count": 1,
+    "dismiss_stale_reviews": true
+  },
+  "restrictions": null
+}
+EOF
+)
+
+  # Set branch protection using curl
+  RESPONSE=$(curl -s -w "\n%{http_code}" \
+    -X PUT \
+    -H "Accept: application/vnd.github+json" \
+    -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+    -H "X-GitHub-Api-Version: 2022-11-28" \
+    -d "${JSON_PAYLOAD}" \
+    "https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/branches/main/protection")
+
+  # Extract HTTP status code
+  HTTP_CODE=$(echo "${RESPONSE}" | tail -n1)
+  RESPONSE_BODY=$(echo "${RESPONSE}" | head -n -1)
+
+  if [ "${HTTP_CODE}" -eq 200 ]; then
     echo "✅ Successfully protected the main branch."
     echo "   Branch Protection Rules Applied:"
-    echo "   - Require pull request reviews before merging: On"
-    echo "     - Required approving reviews: 1"
-    echo "     - Dismiss stale pull request approvals: On"
-    echo "   - Require status checks to pass before merging: Off (currently no specific checks enforced by script)"
     echo "   - Enforce admin bypass prevention: On"
     echo "   - Prevent force pushes: On"
     echo "   - Prevent deletions: On"
+    echo "   - Require pull request reviews: 1 approval required"
+    echo "   - Require branches to be up to date before merging: On"
+    if [[ -f ".github/workflows/ci.yml" ]]; then
+      echo "   - Require status checks: test job required"
+    fi
+    echo ""
   else
     echo "❌ CRITICAL: Failed to protect the 'main' branch for ${REPO_OWNER}/${REPO_NAME}."
+    echo "   HTTP Status Code: ${HTTP_CODE}"
+    echo "   Response: ${RESPONSE_BODY}"
     echo "   This is a critical step. Further repository setup might be incomplete or insecure."
     echo "   Please check the repository path, your permissions, and gh CLI authentication."
     exit 1
@@ -188,9 +225,11 @@ echo "Next Steps / Manual Configuration:"
 echo "--------------------------------"
 echo "- Consider creating detailed issue templates in the '.github/ISSUE_TEMPLATE' directory."
 echo "- Consider creating pull request templates in the '.github/PULL_REQUEST_TEMPLATE' directory or as a '.github/PULL_REQUEST_TEMPLATE.md' file."
-echo "- Review and configure specific required status checks for your 'main' branch protection rules if needed."
-echo "  (Currently, no specific checks are enforced by this script beyond requiring PRs)."
-echo "- Explore other repository settings that might be relevant to your project (e.g., Actions, Pages, webhooks, environments)."
+echo "- Branch protection is now active - all PRs must be up-to-date with main branch and have required reviews."
+echo "- If you have an existing CI workflow (.github/workflows/ci.yml), manually configure it as a required status check:"
+echo "  Settings > Branches > main > Edit > Require status checks to pass before merging"
+echo "- Review and adjust your CI workflow as needed for your project."
+echo "- Explore other repository settings that might be relevant to your project (e.g., Pages, webhooks, environments)."
 echo "--------------------------------"
 
 exit 0

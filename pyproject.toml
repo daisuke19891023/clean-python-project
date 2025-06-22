@@ -1,7 +1,7 @@
 [project]
-name = "test-project-alpha"
+name = "{{PROJECT_NAME}}"
 version = "0.1.0"
-description = "An alpha test project."
+description = "{{PROJECT_DESCRIPTION}}"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
@@ -10,6 +10,9 @@ dependencies = [
     "pydantic-settings>=2.9.1",
 
 ] # Populated by user or later steps if needed
+
+[project.scripts]
+{{PROJECT_NAME_SLUG}} = "{{LIBRARY_NAME}}.main:main"
 
 [project.optional-dependencies]
 docs = [

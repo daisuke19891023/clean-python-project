@@ -63,6 +63,26 @@ success "PROJECT_NAME_SLUGが生成されました: $PROJECT_NAME_SLUG"
 info "ライブラリディレクトリを作成しています..."
 mkdir -p "src/$LIBRARY_NAME"
 touch "src/$LIBRARY_NAME/__init__.py"
+
+# Create main.py file for the library
+cat > "src/$LIBRARY_NAME/main.py" << EOF
+#!/usr/bin/env python3
+"""Main entry point for $PROJECT_NAME."""
+
+import sys
+from typing import NoReturn
+
+
+def main() -> NoReturn:
+    """Main function."""
+    print("Hello from $PROJECT_NAME!")
+    sys.exit(0)
+
+
+if __name__ == "__main__":
+    main()
+EOF
+
 success "ライブラリディレクトリ src/$LIBRARY_NAME が作成されました"
 
 # --- Perform File Content Updates ---
@@ -76,8 +96,10 @@ sed -i "s/{{PROJECT_NAME_SLUG}}/$PROJECT_NAME_SLUG/g" README.md
 success "README.mdが更新されました"
 
 info "pyproject.tomlを更新しています..."
-sed -i "s/name = \"{{PROJECT_NAME}}\"/name = \"$PROJECT_NAME_SLUG\"/g" pyproject.toml
-sed -i "s/description = \"{{PROJECT_DESCRIPTION}}\"/description = \"$PROJECT_DESCRIPTION\"/g" pyproject.toml
+sed -i "s/{{PROJECT_NAME}}/$PROJECT_NAME/g" pyproject.toml
+sed -i "s/{{PROJECT_DESCRIPTION}}/$PROJECT_DESCRIPTION/g" pyproject.toml
+sed -i "s/{{PROJECT_NAME_SLUG}}/$PROJECT_NAME_SLUG/g" pyproject.toml
+sed -i "s/{{LIBRARY_NAME}}/$LIBRARY_NAME/g" pyproject.toml
 sed -i "s|--cov=src|--cov=src/$LIBRARY_NAME|g" pyproject.toml
 sed -i "s|include = \[\"src\"\]|include = \[\"src/$LIBRARY_NAME\"\]|g" pyproject.toml
 success "pyproject.tomlが更新されました"
