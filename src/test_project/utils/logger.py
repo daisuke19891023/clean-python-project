@@ -52,6 +52,7 @@ class LoggerProtocol(Protocol):
 def add_timestamp(logger: Any, method_name: str, event_dict: EventDict) -> EventDict:
     """Add ISO timestamp to log entries."""
     import datetime
+
     event_dict["timestamp"] = datetime.datetime.now(datetime.UTC).isoformat()
     return event_dict
 
@@ -112,7 +113,7 @@ def configure_logging(
     include_otel_context: bool = True,
 ) -> None:
     """Configure structured logging with the specified options.
-    
+
     Args:
         log_level: Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
         log_format: Output format ('json', 'console', or 'plain')
@@ -143,26 +144,32 @@ def configure_logging(
 
     # Add format-specific processors
     if log_format == "json":
-        processors.extend([
-            structlog.stdlib.PositionalArgumentsFormatter(),
-            structlog.processors.StackInfoRenderer(),
-            structlog.processors.format_exc_info,
-            structlog.processors.JSONRenderer(),
-        ])
+        processors.extend(
+            [
+                structlog.stdlib.PositionalArgumentsFormatter(),
+                structlog.processors.StackInfoRenderer(),
+                structlog.processors.format_exc_info,
+                structlog.processors.JSONRenderer(),
+            ]
+        )
     elif log_format == "console":
-        processors.extend([
-            structlog.stdlib.PositionalArgumentsFormatter(),
-            structlog.processors.StackInfoRenderer(),
-            structlog.processors.format_exc_info,
-            structlog.dev.ConsoleRenderer(colors=True),
-        ])
+        processors.extend(
+            [
+                structlog.stdlib.PositionalArgumentsFormatter(),
+                structlog.processors.StackInfoRenderer(),
+                structlog.processors.format_exc_info,
+                structlog.dev.ConsoleRenderer(colors=True),
+            ]
+        )
     else:  # plain format
-        processors.extend([
-            structlog.stdlib.PositionalArgumentsFormatter(),
-            structlog.processors.StackInfoRenderer(),
-            structlog.processors.format_exc_info,
-            structlog.processors.KeyValueRenderer(),
-        ])
+        processors.extend(
+            [
+                structlog.stdlib.PositionalArgumentsFormatter(),
+                structlog.processors.StackInfoRenderer(),
+                structlog.processors.format_exc_info,
+                structlog.processors.KeyValueRenderer(),
+            ]
+        )
 
     # Configure structlog
     structlog.configure(
@@ -204,10 +211,10 @@ def configure_logging(
 
 def get_logger(name: str) -> LoggerProtocol:
     """Get a structured logger instance.
-    
+
     Args:
         name: Logger name, typically the module name
-        
+
     Returns:
         Configured logger instance
     """
@@ -216,13 +223,14 @@ def get_logger(name: str) -> LoggerProtocol:
 
 def log_performance(logger: LoggerProtocol) -> Callable[[F], F]:
     """Decorator to log function performance metrics.
-    
+
     Args:
         logger: Logger instance to use for performance logging
-        
+
     Returns:
         Decorator function
     """
+
     def decorator(func: F) -> F:
         @wraps(func)
         def wrapper(*args: Any, **kwargs: Any) -> Any:
@@ -262,12 +270,12 @@ def setup_application_logging(
     log_file: str | None = None,
 ) -> LoggerProtocol:
     """Set up logging for an application with sensible defaults.
-    
+
     Args:
         app_name: Application name for the logger
         environment: Environment ('development', 'production', 'testing')
         log_file: Optional log file path
-        
+
     Returns:
         Configured application logger
     """

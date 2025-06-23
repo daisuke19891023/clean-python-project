@@ -26,32 +26,27 @@ class TestLoggingIntegration:
 
             # Configure logging with JSON output
             configure_logging(
-                log_level="INFO",
-                log_format="json",
-                log_file=str(log_file)
+                log_level="INFO", log_format="json", log_file=str(log_file)
             )
 
             logger = get_logger("test_module")
 
             # Test structured logging
             logger.info(
-                "User action completed",
-                user_id="123",
-                action="login",
-                duration_ms=150
+                "User action completed", user_id="123", action="login", duration_ms=150
             )
 
             logger.error(
                 "Database connection failed",
                 database="primary",
                 error_code="CONNECTION_TIMEOUT",
-                retry_count=3
+                retry_count=3,
             )
 
             # Verify log file contains structured JSON
             assert log_file.exists()
             log_content = log_file.read_text()
-            log_lines = [line for line in log_content.strip().split('\n') if line]
+            log_lines = [line for line in log_content.strip().split("\n") if line]
 
             assert len(log_lines) >= 2
 
@@ -90,7 +85,11 @@ class TestLoggingIntegration:
 
     def test_performance_logging_workflow(self) -> None:
         """Test performance logging decorator workflow."""
-        from test_project.utils.logger import configure_logging, get_logger, log_performance
+        from test_project.utils.logger import (
+            configure_logging,
+            get_logger,
+            log_performance,
+        )
 
         configure_logging(log_level="DEBUG", log_format="json")
         logger = get_logger("perf_test")
@@ -98,6 +97,7 @@ class TestLoggingIntegration:
         @log_performance(logger)
         def slow_operation(duration: float = 0.001) -> str:
             import time
+
             time.sleep(duration)
             return "completed"
 

@@ -43,9 +43,7 @@ class TestLoggerConfiguration:
             log_file = Path(temp_dir) / "test.log"
 
             configure_logging(
-                log_level="WARNING",
-                log_format="json",
-                log_file=str(log_file)
+                log_level="WARNING", log_format="json", log_file=str(log_file)
             )
 
             logger = structlog.get_logger("file_test")
@@ -82,18 +80,14 @@ class TestLoggerConfiguration:
             log_file = Path(temp_dir) / "context_test.log"
 
             configure_logging(
-                log_level="INFO",
-                log_format="json",
-                log_file=str(log_file)
+                log_level="INFO", log_format="json", log_file=str(log_file)
             )
 
             logger = get_logger("context_test")
 
             # Bind context to logger
             bound_logger = logger.bind(
-                user_id="user123",
-                session_id="session456",
-                request_id="req789"
+                user_id="user123", session_id="session456", request_id="req789"
             )
 
             bound_logger.info("Action performed", action="login")
@@ -120,9 +114,7 @@ class TestStructuredOutput:
             log_file = Path(temp_dir) / "structure_test.log"
 
             configure_logging(
-                log_level="INFO",
-                log_format="json",
-                log_file=str(log_file)
+                log_level="INFO", log_format="json", log_file=str(log_file)
             )
 
             logger = get_logger("structure_test")
@@ -133,7 +125,7 @@ class TestStructuredOutput:
                 float_field=3.14,
                 bool_field=True,
                 list_field=["a", "b", "c"],
-                dict_field={"nested": "value"}
+                dict_field={"nested": "value"},
             )
 
             content = log_file.read_text()
@@ -161,9 +153,7 @@ class TestStructuredOutput:
             log_file = Path(temp_dir) / "levels_test.log"
 
             configure_logging(
-                log_level="DEBUG",
-                log_format="json",
-                log_file=str(log_file)
+                log_level="DEBUG", log_format="json", log_file=str(log_file)
             )
 
             logger = get_logger("levels_test")
@@ -175,7 +165,7 @@ class TestStructuredOutput:
             logger.critical("Critical message")
 
             content = log_file.read_text()
-            log_lines = [line for line in content.strip().split('\n') if line]
+            log_lines = [line for line in content.strip().split("\n") if line]
 
             assert len(log_lines) == 5
 
@@ -207,9 +197,7 @@ class TestOpenTelemetryCompatibility:
             log_file = Path(temp_dir) / "trace_test.log"
 
             configure_logging(
-                log_level="INFO",
-                log_format="json",
-                log_file=str(log_file)
+                log_level="INFO", log_format="json", log_file=str(log_file)
             )
 
             logger = get_logger("trace_test")
@@ -219,7 +207,7 @@ class TestOpenTelemetryCompatibility:
                 "Test message with trace info",
                 trace_id="abc123def456",
                 span_id="789xyz",
-                trace_flags="01"
+                trace_flags="01",
             )
 
             content = log_file.read_text()
@@ -235,15 +223,17 @@ class TestPerformanceLogging:
 
     def test_log_performance_decorator(self) -> None:
         """Test performance logging decorator functionality."""
-        from test_project.utils.logger import configure_logging, get_logger, log_performance
+        from test_project.utils.logger import (
+            configure_logging,
+            get_logger,
+            log_performance,
+        )
 
         with tempfile.TemporaryDirectory() as temp_dir:
             log_file = Path(temp_dir) / "perf_test.log"
 
             configure_logging(
-                log_level="INFO",
-                log_format="json",
-                log_file=str(log_file)
+                log_level="INFO", log_format="json", log_file=str(log_file)
             )
 
             logger = get_logger("perf_test")
@@ -267,15 +257,17 @@ class TestPerformanceLogging:
 
     def test_log_performance_with_exception(self) -> None:
         """Test performance logging when function raises exception."""
-        from test_project.utils.logger import configure_logging, get_logger, log_performance
+        from test_project.utils.logger import (
+            configure_logging,
+            get_logger,
+            log_performance,
+        )
 
         with tempfile.TemporaryDirectory() as temp_dir:
             log_file = Path(temp_dir) / "perf_exception_test.log"
 
             configure_logging(
-                log_level="INFO",
-                log_format="json",
-                log_file=str(log_file)
+                log_level="INFO", log_format="json", log_file=str(log_file)
             )
 
             logger = get_logger("perf_exception_test")
