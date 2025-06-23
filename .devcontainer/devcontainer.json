@@ -1,30 +1,21 @@
-// For format details, see https://aka.ms/devcontainer.json. For config options, see the
-// README at: https://github.com/devcontainers/templates/tree/main/src/python
 {
-  "name": "Python Project Template",
-  // Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-  "image": "mcr.microsoft.com/devcontainers/python:3.12-bullseye",
-  "containerEnv": {
-    "TZ": "Asia/Tokyo"
-  },
-  "runArgs": ["--init"],
-  "features": {
-    "ghcr.io/devcontainers/features/git:1": {
-      "ppa": true,
-      "version": "latest"
-    },
-    "ghcr.io/devcontainers/features/github-cli:1": {
-      "version": "latest"
+  "name": "Claude Code Python Dev Sandbox",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "args": {
+      "TZ": "${localEnv:TZ:America/Los_Angeles}"
     }
   },
-  "mounts": [
-    "source=venv-${devcontainerId},target=${containerWorkspaceFolder}/.venv,type=volume"
+  "runArgs": [
+    "--cap-add=NET_ADMIN",
+    "--cap-add=NET_RAW"
   ],
   "customizations": {
     "vscode": {
       "extensions": [
+        "dbaeumer.vscode-eslint",
         "esbenp.prettier-vscode",
-        "GitHub.copilot",
+        "eamodio.gitlens",
         "ms-python.python",
         "ms-python.vscode-pylance",
         "ms-python.pyright",
@@ -33,9 +24,24 @@
         "streetsidesoftware.code-spell-checker",
         "KevinRose.vsc-python-indent",
         "ryanluker.vscode-coverage-gutters",
-        "ms-vscode.vscode-json"
+        "ms-vscode.vscode-json",
+        "ms-azuretools.vscode-docker"
       ]
     }
   },
+  "remoteUser": "node",
+  "mounts": [
+    "source=claude-code-bashhistory,target=/commandhistory,type=volume",
+    "source=claude-code-config,target=/home/node/.claude,type=volume"
+  ],
+  "remoteEnv": {
+    "NODE_OPTIONS": "--max-old-space-size=4096",
+    "CLAUDE_CONFIG_DIR": "/home/node/.claude",
+    "POWERLEVEL9K_DISABLE_GITSTATUS": "true",
+    "PYTHONPATH": "/workspace/src",
+    "UV_CACHE_DIR": "/home/node/.cache/uv"
+  },
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=delegated",
+  "workspaceFolder": "/workspace",
   "postCreateCommand": "bash ./.devcontainer/postCreateCommand.sh"
 }

@@ -5,4 +5,5 @@ source = src
 [report]
 omit =
     tests/*
-    */__init__.py 
+    */__init__.py
+    */main.py 

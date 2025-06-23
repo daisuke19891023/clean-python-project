@@ -15,7 +15,7 @@
   "python.terminal.activateEnvironment": true,
   "python.packageManager": "uv",
   "[python]": {
-    "editor.defaultFormatter": "charliermarsh.ruff",
+    "editor.defaultFormatter": "ms-python.vscode-pylance",
     "editor.formatOnSave": true,
     "editor.codeActionsOnSave": {
       "source.fixAll": "explicit",
@@ -38,6 +38,10 @@
   "coverage-gutters.coverageFileNames": [
     ".pytest_cache/coverage.xml"
   ],
+  "autoDocstring.docstringFormat": "google",
+  "autoDocstring.guessTypes": true,
+  "autoDocstring.generateDocstringOnEnter": true,
+  "autoDocstring.quoteStyle": "\"\"\"" ,
   "[json][jsonrc]": {
     "editor.quickSuggestions": {
       "strings": true
@@ -58,5 +62,20 @@
   "[markdown]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.formatOnSave": true
-  }
+  },
+          "terminal.integrated.defaultProfile.linux": "zsh",
+        "terminal.integrated.profiles.linux": {
+          "bash": {
+            "path": "bash",
+            "icon": "terminal-bash"
+          },
+          "zsh": {
+            "path": "zsh"
+          }
+        },
+        "files.associations": {
+          "*.yml": "yaml",
+          "*.yaml": "yaml",
+          "*.toml": "toml"
+        }
 }
