@@ -98,7 +98,7 @@ def add_opentelemetry_context(
     except ImportError:
         # OpenTelemetry not available, continue without trace context
         pass
-    except Exception:  # nosec B110
+    except Exception:
         # Any other error, continue without trace context
         pass
 

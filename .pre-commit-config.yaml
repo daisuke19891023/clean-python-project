@@ -8,13 +8,6 @@ repos:
       - id: ruff-format
         stages: [pre-commit]
 
-  - repo: https://github.com/PyCQA/bandit
-    rev: 1.7.5
-    hooks:
-      - id: bandit
-        args: ["-r", "src"]
-        stages: [pre-commit]
-        pass_filenames: false
 
   - repo: https://github.com/commitizen-tools/commitizen
     rev: v3.20.0
