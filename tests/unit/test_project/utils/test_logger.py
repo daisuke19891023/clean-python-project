@@ -7,6 +7,15 @@ from typing import Any
 
 import pytest
 import structlog
+from test_project.utils.logger import configure_logging, get_logger, log_performance
+
+# Test constants
+EXPECTED_DURATION_150 = 150
+EXPECTED_RETRY_COUNT_3 = 3
+EXPECTED_INT_42 = 42
+EXPECTED_FLOAT_314 = 3.14
+EXPECTED_LOG_LEVELS_COUNT = 5
+TEST_EXCEPTION_MESSAGE = "Test exception"
 
 
 class TestLoggerConfiguration:
@@ -14,7 +23,6 @@ class TestLoggerConfiguration:
 
     def test_configure_logging_with_json_format(self) -> None:
         """Test logger configuration with JSON format."""
-        from test_project.utils.logger import configure_logging
 
         configure_logging(log_level="INFO", log_format="json")
 
@@ -27,7 +35,6 @@ class TestLoggerConfiguration:
 
     def test_configure_logging_with_console_format(self) -> None:
         """Test logger configuration with console format."""
-        from test_project.utils.logger import configure_logging
 
         configure_logging(log_level="DEBUG", log_format="console")
 
@@ -37,7 +44,6 @@ class TestLoggerConfiguration:
 
     def test_configure_logging_with_file_output(self) -> None:
         """Test logger configuration with file output."""
-        from test_project.utils.logger import configure_logging
 
         with tempfile.TemporaryDirectory() as temp_dir:
             log_file = Path(temp_dir) / "test.log"
@@ -58,7 +64,6 @@ class TestLoggerConfiguration:
 
     def test_get_logger_returns_bound_logger(self) -> None:
         """Test that get_logger returns a properly bound logger."""
-        from test_project.utils.logger import configure_logging, get_logger
 
         configure_logging(log_level="INFO", log_format="json")
 
@@ -74,7 +79,6 @@ class TestLoggerConfiguration:
 
     def test_logger_with_context_binding(self) -> None:
         """Test logger context binding functionality."""
-        from test_project.utils.logger import configure_logging, get_logger
 
         with tempfile.TemporaryDirectory() as temp_dir:
             log_file = Path(temp_dir) / "context_test.log"
@@ -108,7 +112,6 @@ class TestStructuredOutput:
 
     def test_json_output_structure(self) -> None:
         """Test that JSON output has the expected structure."""
-        from test_project.utils.logger import configure_logging, get_logger
 
         with tempfile.TemporaryDirectory() as temp_dir:
             log_file = Path(temp_dir) / "structure_test.log"
@@ -121,8 +124,8 @@ class TestStructuredOutput:
             logger.info(
                 "Test message",
                 string_field="value",
-                int_field=42,
-                float_field=3.14,
+                int_field=EXPECTED_INT_42,
+                float_field=EXPECTED_FLOAT_314,
                 bool_field=True,
                 list_field=["a", "b", "c"],
                 dict_field={"nested": "value"},
@@ -139,15 +142,14 @@ class TestStructuredOutput:
 
             # Verify custom fields
             assert log_entry["string_field"] == "value"
-            assert log_entry["int_field"] == 42
-            assert log_entry["float_field"] == 3.14
+            assert log_entry["int_field"] == EXPECTED_INT_42
+            assert log_entry["float_field"] == EXPECTED_FLOAT_314
             assert log_entry["bool_field"] is True
             assert log_entry["list_field"] == ["a", "b", "c"]
             assert log_entry["dict_field"] == {"nested": "value"}
 
     def test_log_levels(self) -> None:
         """Test different log levels are properly handled."""
-        from test_project.utils.logger import configure_logging, get_logger
 
         with tempfile.TemporaryDirectory() as temp_dir:
             log_file = Path(temp_dir) / "levels_test.log"
@@ -167,7 +169,7 @@ class TestStructuredOutput:
             content = log_file.read_text()
             log_lines = [line for line in content.strip().split("\n") if line]
 
-            assert len(log_lines) == 5
+            assert len(log_lines) == EXPECTED_LOG_LEVELS_COUNT
 
             levels: list[str] = []
             for line in log_lines:
@@ -182,7 +184,6 @@ class TestOpenTelemetryCompatibility:
 
     def test_logger_without_opentelemetry(self) -> None:
         """Test that logger works without OpenTelemetry installed."""
-        from test_project.utils.logger import configure_logging, get_logger
 
         # Should work fine without OpenTelemetry
         configure_logging(log_level="INFO", log_format="json")
@@ -191,7 +192,6 @@ class TestOpenTelemetryCompatibility:
 
     def test_logger_structure_supports_trace_fields(self) -> None:
         """Test that log structure can accommodate OpenTelemetry trace fields."""
-        from test_project.utils.logger import configure_logging, get_logger
 
         with tempfile.TemporaryDirectory() as temp_dir:
             log_file = Path(temp_dir) / "trace_test.log"
@@ -223,11 +223,6 @@ class TestPerformanceLogging:
 
     def test_log_performance_decorator(self) -> None:
         """Test performance logging decorator functionality."""
-        from test_project.utils.logger import (
-            configure_logging,
-            get_logger,
-            log_performance,
-        )
 
         with tempfile.TemporaryDirectory() as temp_dir:
             log_file = Path(temp_dir) / "perf_test.log"
@@ -243,7 +238,7 @@ class TestPerformanceLogging:
                 return value * 2
 
             result = test_function(21)
-            assert result == 42
+            assert result == EXPECTED_INT_42
 
             # Verify performance log was created
             content = log_file.read_text()
@@ -252,16 +247,11 @@ class TestPerformanceLogging:
             assert "duration_ms" in log_entry
             assert "function_name" in log_entry
             assert log_entry["function_name"] == "test_function"
-            assert isinstance(log_entry["duration_ms"], (int, float))
+            assert isinstance(log_entry["duration_ms"], int | float)
             assert log_entry["duration_ms"] >= 0
 
     def test_log_performance_with_exception(self) -> None:
         """Test performance logging when function raises exception."""
-        from test_project.utils.logger import (
-            configure_logging,
-            get_logger,
-            log_performance,
-        )
 
         with tempfile.TemporaryDirectory() as temp_dir:
             log_file = Path(temp_dir) / "perf_exception_test.log"
@@ -274,9 +264,10 @@ class TestPerformanceLogging:
 
             @log_performance(logger)
             def failing_function() -> None:
-                raise ValueError("Test exception")
+                exception_msg = TEST_EXCEPTION_MESSAGE
+                raise ValueError(exception_msg)
 
-            with pytest.raises(ValueError, match="Test exception"):
+            with pytest.raises(ValueError, match=TEST_EXCEPTION_MESSAGE):
                 failing_function()
 
             # Verify performance log was created even with exception
@@ -287,4 +278,4 @@ class TestPerformanceLogging:
             assert "function_name" in log_entry
             assert log_entry["function_name"] == "failing_function"
             assert "exception" in log_entry
-            assert log_entry["exception"] == "ValueError: Test exception"
+            assert log_entry["exception"] == f"ValueError: {TEST_EXCEPTION_MESSAGE}"

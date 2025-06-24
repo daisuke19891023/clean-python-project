@@ -92,6 +92,12 @@ ignore = [
      "W191",
      "T",
      "D",
+     "ANN401",  # Any types needed for structlog compatibility
+     "FBT001", "FBT002",  # Boolean arguments acceptable for config functions
+     "PLR0913",  # Many arguments acceptable for config functions
+     "S110",  # Exception handling in optional imports is acceptable
+     "BLE001",  # Broad exception handling needed for optional dependencies
+     "PLC0415",  # Conditional imports needed for optional dependencies
  ]
  # Allow fix for all enabled rules (when `--fix`) is provided.
 fixable = ["ALL"]
@@ -101,7 +107,7 @@ unfixable = []
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 
 [tool.ruff.lint.per-file-ignores]
-"tests/**/*.py" = ["S101"]
+"tests/**/*.py" = ["S101", "PLR2004", "TRY003", "EM101"]
 
 [tool.ruff.format]
 # Like Black, use double quotes for strings.
@@ -143,3 +149,6 @@ markers = [
   "slow: marks tests as slow (deselect with '-m \"not slow\"')",
   "integration: marks integration tests"
 ]
+
+[tool.bandit]
+exclude_dirs = ["tests", ".venv", "venv", ".nox", "build", "dist"]

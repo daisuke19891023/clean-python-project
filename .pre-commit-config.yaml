@@ -4,6 +4,7 @@ repos:
     hooks:
       - id: ruff
         stages: [pre-commit]
+        args: [--fix]
       - id: ruff-format
         stages: [pre-commit]
 
@@ -13,6 +14,7 @@ repos:
       - id: bandit
         args: ["-r", "src"]
         stages: [pre-commit]
+        pass_filenames: false
 
   - repo: https://github.com/commitizen-tools/commitizen
     rev: v3.20.0

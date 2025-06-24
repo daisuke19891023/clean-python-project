@@ -5,6 +5,8 @@ with OpenTelemetry tracing when available. It supports multiple output formats
 and can be configured for different environments.
 """
 
+import datetime
+import inspect
 import logging
 import logging.handlers
 import sys
@@ -49,18 +51,17 @@ class LoggerProtocol(Protocol):
         ...
 
 
-def add_timestamp(logger: Any, method_name: str, event_dict: EventDict) -> EventDict:
+def add_timestamp(_logger: Any, _method_name: str, event_dict: EventDict) -> EventDict:
     """Add ISO timestamp to log entries."""
-    import datetime
-
     event_dict["timestamp"] = datetime.datetime.now(datetime.UTC).isoformat()
     return event_dict
 
 
-def add_caller_info(logger: Any, method_name: str, event_dict: EventDict) -> EventDict:
+def add_caller_info(
+    _logger: Any, _method_name: str, event_dict: EventDict
+) -> EventDict:
     """Add caller information to log entries."""
     # Get caller frame (skip structlog internal frames)
-    import inspect
 
     frame = inspect.currentframe()
     if frame is not None:
@@ -80,24 +81,24 @@ def add_caller_info(logger: Any, method_name: str, event_dict: EventDict) -> Eve
 
 
 def add_opentelemetry_context(
-    logger: Any, method_name: str, event_dict: EventDict
+    _logger: Any, _method_name: str, event_dict: EventDict
 ) -> EventDict:
     """Add OpenTelemetry trace context if available."""
     try:
         # Try to import OpenTelemetry and get current span
-        from opentelemetry import trace
+        from opentelemetry import trace  # type: ignore[import-untyped]
 
-        span = trace.get_current_span()
-        if span and span.is_recording():
-            span_context = span.get_span_context()
-            if span_context.is_valid:
-                event_dict["trace_id"] = format(span_context.trace_id, "032x")
-                event_dict["span_id"] = format(span_context.span_id, "016x")
-                event_dict["trace_flags"] = format(span_context.trace_flags, "02x")
+        span = trace.get_current_span()  # type: ignore[attr-defined]
+        if span and span.is_recording():  # type: ignore[attr-defined]
+            span_context = span.get_span_context()  # type: ignore[attr-defined]
+            if span_context.is_valid:  # type: ignore[attr-defined]
+                event_dict["trace_id"] = format(span_context.trace_id, "032x")  # type: ignore[attr-defined]
+                event_dict["span_id"] = format(span_context.span_id, "016x")  # type: ignore[attr-defined]
+                event_dict["trace_flags"] = format(span_context.trace_flags, "02x")  # type: ignore[attr-defined]
     except ImportError:
         # OpenTelemetry not available, continue without trace context
         pass
-    except Exception:
+    except Exception:  # nosec B110
         # Any other error, continue without trace context
         pass
 
@@ -180,7 +181,7 @@ def configure_logging(
     )
 
     # Configure standard library logging
-    handlers = []
+    handlers: list[logging.Handler] = []
 
     # Add console handler
     console_handler = logging.StreamHandler(sys.stdout)
@@ -238,8 +239,7 @@ def log_performance(logger: LoggerProtocol) -> Callable[[F], F]:
             exception_info = None
 
             try:
-                result = func(*args, **kwargs)
-                return result
+                return func(*args, **kwargs)
             except Exception as e:
                 exception_info = f"{type(e).__name__}: {e}"
                 raise
