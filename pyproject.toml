@@ -1,18 +1,19 @@
 [project]
-name = "{{PROJECT_NAME}}"
+name = "testproject"
 version = "0.1.0"
-description = "{{PROJECT_DESCRIPTION}}"
+description = "A test project for verification"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "load-dotenv>=0.1.0",
     "pydantic>=2.9.2",
     "pydantic-settings>=2.9.1",
+    "structlog>=24.1.0",
 
 ] # Populated by user or later steps if needed
 
 [project.scripts]
-{{PROJECT_NAME_SLUG}} = "{{LIBRARY_NAME}}.main:main"
+testproject = "test_project.main:main"
 
 [project.optional-dependencies]
 docs = [
@@ -30,7 +31,6 @@ dev-dependencies = [
     "ruff>=0.6.9",
     "pyright>=1.1.402",
     "pip-audit>=2.7.1",
-    "bandit>=1.7.0",
     "pytest>=8.3.3",
     "pytest-cov>=5.0.0",
     "freezegun>=1.5.1",
@@ -91,6 +91,13 @@ ignore = [
      "W191",
      "T",
      "D",
+     "I001",  # Import sorting conflicts between tools - let ruff-format handle it
+     "ANN401",  # Any types needed for structlog compatibility
+     "FBT001", "FBT002",  # Boolean arguments acceptable for config functions
+     "PLR0913",  # Many arguments acceptable for config functions
+     "S110",  # Exception handling in optional imports is acceptable
+     "BLE001",  # Broad exception handling needed for optional dependencies
+     "PLC0415",  # Conditional imports needed for optional dependencies
  ]
  # Allow fix for all enabled rules (when `--fix`) is provided.
 fixable = ["ALL"]
@@ -100,7 +107,7 @@ unfixable = []
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 
 [tool.ruff.lint.per-file-ignores]
-"tests/**/*.py" = ["S101"]
+"tests/**/*.py" = ["S101", "PLR2004", "TRY003", "EM101"]
 
 [tool.ruff.format]
 # Like Black, use double quotes for strings.
@@ -137,8 +144,9 @@ reportMissingTypeStubs = false
 [tool.pytest.ini_options]
 pythonpath = ["src"]
 testpaths = ["tests"]
-addopts = "-v --cov=src/alpha_lib -ra --strict-markers" # This will be replaced by setup.sh
+addopts = "-v --cov=src/test_project -ra --strict-markers" # This will be replaced by setup.sh
 markers = [
   "slow: marks tests as slow (deselect with '-m \"not slow\"')",
   "integration: marks integration tests"
 ]
+

@@ -1,6 +1,6 @@
-# {{PROJECT_NAME}}
+# TestProject
 
-{{PROJECT_DESCRIPTION}}
+A test project for verification
 
 ## Features
 
@@ -26,7 +26,7 @@
 ```bash
 # Clone the repository
 git clone <your-repo-url>
-cd {{PROJECT_NAME_SLUG}}
+cd testproject
 
 # Install dependencies
 uv pip install -e ".[dev]"
@@ -75,16 +75,16 @@ mkdocs serve
 
 ```bash
 # Build Docker image
-docker build -t {{PROJECT_NAME_SLUG}} .
+docker build -t testproject .
 
 # Run Docker container
-docker run {{PROJECT_NAME_SLUG}}
+docker run testproject
 ```
 
 ## Project Structure
 
 ```
-{{PROJECT_NAME_SLUG}}/
+testproject/
 ├── src/                    # Source code
 ├── tests/                  # Test files
 ├── docs/                   # Documentation
@@ -147,7 +147,7 @@ cz bump
 
 ## License
 
-This project is licensed under the {{LICENSE_TYPE}} License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 # 開発環境セットアップ手順
 
