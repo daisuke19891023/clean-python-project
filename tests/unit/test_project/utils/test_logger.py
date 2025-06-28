@@ -7,6 +7,7 @@ from typing import Any
 
 import pytest
 import structlog
+
 from test_project.utils.logger import configure_logging, get_logger, log_performance
 
 # Test constants
