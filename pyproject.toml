@@ -91,6 +91,7 @@ ignore = [
      "W191",
      "T",
      "D",
+     "I001",  # Import sorting conflicts between tools - let ruff-format handle it
      "ANN401",  # Any types needed for structlog compatibility
      "FBT001", "FBT002",  # Boolean arguments acceptable for config functions
      "PLR0913",  # Many arguments acceptable for config functions
