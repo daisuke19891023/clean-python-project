@@ -80,7 +80,7 @@ pymdown-extensions==10.15
     # via mkdocs-material
 python-dateutil==2.9.0.post0
     # via ghp-import
-python-dotenv==1.1.0
+python-dotenv==1.1.1
     # via
     #   load-dotenv
     #   pydantic-settings
