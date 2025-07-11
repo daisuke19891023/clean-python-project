@@ -69,7 +69,7 @@ pluggy==1.6.0
     #   diff-cover
     #   pytest
     #   pytest-cov
-pygments==2.19.1
+pygments==2.19.2
     # via
     #   diff-cover
     #   mkdocs-material
