@@ -72,7 +72,7 @@ pydantic-core==2.33.2
     # via pydantic
 pydantic-settings==2.9.1
     # via test-project-alpha (pyproject.toml)
-pygments==2.19.1
+pygments==2.19.2
     # via
     #   mkdocs-material
     #   sphinx
@@ -80,7 +80,7 @@ pymdown-extensions==10.15
     # via mkdocs-material
 python-dateutil==2.9.0.post0
     # via ghp-import
-python-dotenv==1.1.0
+python-dotenv==1.1.1
     # via
     #   load-dotenv
     #   pydantic-settings
