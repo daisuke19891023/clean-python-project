@@ -1,0 +1,12 @@
+これはCP932でエンコードされる予定のテストファイルです。
+This is a test file to be encoded in CP932.
+
+CP932特殊文字のテスト:
+- 漢字: 日本語テスト  
+- ひらがな: あいうえお
+- カタカナ: アイウエオ
+- 半角カナ: ｱｲｳｴｵ
+
+CP932 encoding test content:
+Line 1: Shift_JIS compatible content
+Line 2: 日本語コンテンツ

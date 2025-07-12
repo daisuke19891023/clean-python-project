@@ -1,0 +1,19 @@
+{
+    "name": "テストデータ",
+    "id": 12345,
+    "active": true,
+    "items": [
+        {
+            "title": "アイテム1",
+            "value": 100.5
+        },
+        {
+            "title": "アイテム2", 
+            "value": 200.0
+        }
+    ],
+    "metadata": {
+        "created_at": "2024-01-01T00:00:00Z",
+        "encoding": "utf-8"
+    }
+}

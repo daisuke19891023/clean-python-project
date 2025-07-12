@@ -1,0 +1,13 @@
+これはUTF-8でエンコードされたテストファイルです。
+This is a test file encoded in UTF-8.
+
+特殊文字のテスト:
+- 漢字: 日本語テスト
+- ひらがな: あいうえお
+- カタカナ: アイウエオ
+- 記号: ！？"#$%&'()
+
+Multi-line content for testing:
+Line 1: UTF-8 content
+Line 2: 日本語コンテンツ
+Line 3: Mixed content 混在コンテンツ
