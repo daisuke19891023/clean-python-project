@@ -35,7 +35,7 @@
                 "hooks": [
                     {
                         "type": "command",
-                        "command": "/workspace/.claude/hooks/python_quality_check.sh ${file_path}",
+                        "command": ".claude/hooks/python_quality_check.sh ${file_path}",
                         "decision": "block"
                     }
                 ]
@@ -46,7 +46,7 @@
                 "hooks": [
                     {
                         "type": "command",
-                        "command": "/workspace/.claude/hooks/python_final_quality_check.sh",
+                        "command": ".claude/hooks/python_final_quality_check.sh",
                         "decision": "block"
                     }
                 ]

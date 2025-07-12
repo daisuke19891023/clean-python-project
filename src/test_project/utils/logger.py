@@ -58,7 +58,7 @@ def add_timestamp(_logger: Any, _method_name: str, event_dict: EventDict) -> Eve
 
 
 def add_caller_info(
-    _logger: Any, _method_name: str, event_dict: EventDict
+    _logger: Any, _method_name: str, event_dict: EventDict,
 ) -> EventDict:
     """Add caller information to log entries."""
     # Get caller frame (skip structlog internal frames)
@@ -81,7 +81,7 @@ def add_caller_info(
 
 
 def add_opentelemetry_context(
-    _logger: Any, _method_name: str, event_dict: EventDict
+    _logger: Any, _method_name: str, event_dict: EventDict,
 ) -> EventDict:
     """Add OpenTelemetry trace context if available."""
     try:
@@ -122,6 +122,7 @@ def configure_logging(
         include_timestamp: Whether to include timestamps in log entries
         include_caller: Whether to include caller information
         include_otel_context: Whether to include OpenTelemetry context
+
     """
     # Convert log level string to logging constant
     numeric_level = getattr(logging, log_level.upper(), logging.INFO)
@@ -151,7 +152,7 @@ def configure_logging(
                 structlog.processors.StackInfoRenderer(),
                 structlog.processors.format_exc_info,
                 structlog.processors.JSONRenderer(),
-            ]
+            ],
         )
     elif log_format == "console":
         processors.extend(
@@ -160,7 +161,7 @@ def configure_logging(
                 structlog.processors.StackInfoRenderer(),
                 structlog.processors.format_exc_info,
                 structlog.dev.ConsoleRenderer(colors=True),
-            ]
+            ],
         )
     else:  # plain format
         processors.extend(
@@ -169,7 +170,7 @@ def configure_logging(
                 structlog.processors.StackInfoRenderer(),
                 structlog.processors.format_exc_info,
                 structlog.processors.KeyValueRenderer(),
-            ]
+            ],
         )
 
     # Configure structlog
@@ -218,18 +219,20 @@ def get_logger(name: str) -> LoggerProtocol:
 
     Returns:
         Configured logger instance
+
     """
     return structlog.get_logger(name)  # type: ignore[return-value]
 
 
 def log_performance(logger: LoggerProtocol) -> Callable[[F], F]:
-    """Decorator to log function performance metrics.
+    """Log function performance metrics.
 
     Args:
         logger: Logger instance to use for performance logging
 
     Returns:
         Decorator function
+
     """
 
     def decorator(func: F) -> F:
@@ -278,6 +281,7 @@ def setup_application_logging(
 
     Returns:
         Configured application logger
+
     """
     if environment == "production":
         configure_logging(
