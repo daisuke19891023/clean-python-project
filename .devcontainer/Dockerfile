@@ -3,6 +3,15 @@ FROM node:20
 ARG TZ
 ENV TZ="$TZ"
 
+# Set locale
+RUN apt-get update && apt-get install -y locales && \
+    sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
+    dpkg-reconfigure --frontend=noninteractive locales && \
+    update-locale LANG=en_US.UTF-8
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8
+
 # Install basic development tools, Python, and networking tools
 RUN apt update && apt install -y \
   less \
@@ -53,8 +62,8 @@ RUN SNIPPET="export PROMPT_COMMAND='history -a' && export HISTFILE=/commandhisto
 ENV DEVCONTAINER=true
 
 # Create workspace and config directories and set permissions
-RUN mkdir -p /workspace /home/node/.claude /home/node/.local/bin && \
-  chown -R node:node /workspace /home/node/.claude /home/node/.local
+RUN mkdir -p /workspace /home/node/.claude /home/node/.gemini /home/node/.local/bin && \
+  chown -R node:node /workspace /home/node/.claude /home/node/.gemini /home/node/.local
 
 WORKDIR /workspace
 
@@ -91,8 +100,8 @@ RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/
   -a "export PATH=\$PATH:/home/node/.local/bin" \
   -x
 
-# Install Claude Code
-RUN npm install -g @anthropic-ai/claude-code
+# Install Claude Code and Gemini CLI
+RUN npm install -g @anthropic-ai/claude-code @google/gemini-cli
 
 # Copy and set up firewall script
 COPY init-firewall.sh /usr/local/bin/
