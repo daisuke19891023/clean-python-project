@@ -4,10 +4,16 @@
 import sys
 from typing import NoReturn
 
+from test_project.utils.logger import get_logger, setup_application_logging
+
 
 def main() -> NoReturn:
-    """Main function."""
-    print("Hello from TestProject!")
+    """Execute the main function."""
+    # Set up application logging
+    setup_application_logging("TestProject", "development")
+    logger = get_logger(__name__)
+
+    logger.info("Hello from TestProject!")
     sys.exit(0)
 
 

@@ -10,10 +10,18 @@ FILE_PATH="$1"
 if [[ "$FILE_PATH" == *.py ]]; then
     echo "Running quality checks for Python file: $FILE_PATH"
     # run format
-    nox -s format_code
+    echo "Running format..."
+    FORMAT_OUTPUT=$(uv run nox -s format_code 2>&1)
+    FORMAT_EXIT_CODE=$?
+    if [ $FORMAT_EXIT_CODE -ne 0 ]; then
+        echo "ERROR: Formatting failed. Please fix the issues below:" >&2
+        echo "$FORMAT_OUTPUT" >&2
+        exit 2
+    fi
+
     # Run linting
     echo "Running linting..."
-    LINT_OUTPUT=$(nox -s lint 2>&1)
+    LINT_OUTPUT=$(uv run nox -s lint 2>&1)
     LINT_EXIT_CODE=$?
     if [ $LINT_EXIT_CODE -ne 0 ]; then
         echo "ERROR: Linting failed. Please fix the issues below:" >&2
@@ -23,7 +31,7 @@ if [[ "$FILE_PATH" == *.py ]]; then
 
     # Run type checking
     echo "Running type checking..."
-    TYPING_OUTPUT=$(nox -s typing 2>&1)
+    TYPING_OUTPUT=$(uv run nox -s typing 2>&1)
     TYPING_EXIT_CODE=$?
     if [ $TYPING_EXIT_CODE -ne 0 ]; then
         echo "ERROR: Type checking failed. Please fix the issues below:" >&2

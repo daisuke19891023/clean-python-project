@@ -11,7 +11,7 @@ ERROR_MESSAGES=""
 
 # Run tests
 echo "Running tests..."
-TEST_OUTPUT=$(nox -s test 2>&1)
+TEST_OUTPUT=$(uv run nox -s test 2>&1)
 TEST_EXIT_CODE=$?
 if [ $TEST_EXIT_CODE -ne 0 ]; then
     CHECKS_FAILED=true
@@ -20,7 +20,7 @@ fi
 
 # Run linting
 echo "Running linting..."
-LINT_OUTPUT=$(nox -s lint 2>&1)
+LINT_OUTPUT=$(uv run nox -s lint 2>&1)
 LINT_EXIT_CODE=$?
 if [ $LINT_EXIT_CODE -ne 0 ]; then
     CHECKS_FAILED=true
@@ -29,7 +29,7 @@ fi
 
 # Run type checking
 echo "Running type checking..."
-TYPING_OUTPUT=$(nox -s typing 2>&1)
+TYPING_OUTPUT=$(uv run nox -s typing 2>&1)
 TYPING_EXIT_CODE=$?
 if [ $TYPING_EXIT_CODE -ne 0 ]; then
     CHECKS_FAILED=true

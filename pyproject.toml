@@ -20,12 +20,7 @@ docs = [
     "sphinx>=8.1.2",
     "mkdocs-material>=9.5.0",
 ]
-
-[tool.uv]
-# These are the development tools installed by 'uv sync' if no specific extras are chosen,
-# or if these are not specified in [project.optional-dependencies.dev] for 'uv pip install .[dev]'
-# For this project template, these are the primary dev tools managed by nox.
-dev-dependencies = [
+dev = [
     "nox>=2024.10.9",
     "ruff>=0.6.9",
     "pyright>=1.1.402",
@@ -43,7 +38,11 @@ dev-dependencies = [
     "scalene>=1.5.0",
     "hatch>=1.8.0",
     "pdm>=2.12.0"
-    ]
+]
+
+[tool.uv]
+# Development dependencies are now in [project.optional-dependencies.dev]
+# Use 'uv pip install -e .[dev]' or 'uv sync --extra dev' to install them
 
 [tool.ruff]
 # Exclude a variety of commonly ignored directories.
@@ -82,14 +81,7 @@ target-version = "py312"
 [tool.ruff.lint]
 select = ["ALL"]
 ignore = [
-     "COM812", "COM819",
      "D100", "D203", "D213", "D300",
-     "E111", "E114", "E117",
-     "ISC001", "ISC002",
-     "Q000", "Q001", "Q002", "Q003",
-     "W191",
-     "T",
-     "D",
      "I001",  # Import sorting conflicts between tools - let ruff-format handle it
      "ANN401",  # Any types needed for structlog compatibility
      "FBT001", "FBT002",  # Boolean arguments acceptable for config functions
