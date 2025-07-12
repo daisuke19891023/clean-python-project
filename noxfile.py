@@ -64,7 +64,7 @@ def lock(session: Session) -> None:
 def lint(session: Session) -> None:
     """Run linting with Ruff."""
     session.install("-c", constraints(session).as_posix(), "ruff")
-    session.run("ruff", "check")
+    session.run("ruff", "check", "--fix")
 
 
 @nox.session(python=["3.12"], tags=["format"])
