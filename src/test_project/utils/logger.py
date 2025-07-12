@@ -58,7 +58,9 @@ def add_timestamp(_logger: Any, _method_name: str, event_dict: EventDict) -> Eve
 
 
 def add_caller_info(
-    _logger: Any, _method_name: str, event_dict: EventDict,
+    _logger: Any,
+    _method_name: str,
+    event_dict: EventDict,
 ) -> EventDict:
     """Add caller information to log entries."""
     # Get caller frame (skip structlog internal frames)
@@ -81,7 +83,9 @@ def add_caller_info(
 
 
 def add_opentelemetry_context(
-    _logger: Any, _method_name: str, event_dict: EventDict,
+    _logger: Any,
+    _method_name: str,
+    event_dict: EventDict,
 ) -> EventDict:
     """Add OpenTelemetry trace context if available."""
     try:
