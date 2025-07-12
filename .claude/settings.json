@@ -27,5 +27,41 @@
             "Bash(git update-index:*)"
         ],
         "deny": []
+    },
+    "hooks": {
+        "PostToolUse": [
+            {
+                "matcher": "Write|Edit|MultiEdit",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "/workspace/.claude/hooks/python_quality_check.sh ${file_path}",
+                        "decision": "block"
+                    }
+                ]
+            }
+        ],
+        "Stop": [
+            {
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "/workspace/.claude/hooks/python_final_quality_check.sh",
+                        "decision": "block"
+                    }
+                ]
+            }
+        ],
+        "SubagentStop": [
+            {
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "/workspace/.claude/hooks/python_final_quality_check.sh",
+                        "decision": "block"
+                    }
+                ]
+            }
+        ]
     }
 }
