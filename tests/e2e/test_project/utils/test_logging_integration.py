@@ -32,7 +32,9 @@ class TestLoggingIntegration:
 
             # Configure logging with JSON output
             configure_logging(
-                log_level="INFO", log_format="json", log_file=str(log_file),
+                log_level="INFO",
+                log_format="json",
+                log_file=str(log_file),
             )
 
             logger = get_logger("test_module")

@@ -8,8 +8,8 @@ dependencies = [
     "load-dotenv>=0.1.0",
     "pydantic>=2.9.2",
     "pydantic-settings>=2.9.1",
+    "pyyaml>=6.0.2",
     "structlog>=24.1.0",
-
 ] # Populated by user or later steps if needed
 
 [project.scripts]
@@ -89,6 +89,7 @@ ignore = [
      "S110",  # Exception handling in optional imports is acceptable
      "BLE001",  # Broad exception handling needed for optional dependencies
      "PLC0415",  # Conditional imports needed for optional dependencies
+     "TRY400",  # Use logger.error instead of logger.exception for structlog compatibility
  ]
  # Allow fix for all enabled rules (when `--fix`) is provided.
 fixable = ["ALL"]
