@@ -32,7 +32,7 @@
         "PostToolUse": [
             {
                 "matcher": "Write|Edit|MultiEdit",
-                "file_path": "*.py",
+                "file_path": "**/*.py",
                 "hooks": [
                     {
                         "type": "command",

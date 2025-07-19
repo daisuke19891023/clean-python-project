@@ -13,6 +13,7 @@ A test project for verification
 -   Conventional commits with Commitizen
 -   GitHub Actions CI/CD pipeline
 -   Docker support
+-   Structured logging with OpenTelemetry support
 
 ## Quick Start
 
@@ -59,6 +60,62 @@ pytest -n auto
 
 # Run specific test markers
 pytest -m "not slow"
+```
+
+### Logging Configuration
+
+The project includes structured logging with OpenTelemetry support. Configure logging behavior using environment variables:
+
+#### Environment Variables
+
+| Variable | Description | Default | Options |
+| -------- | ----------- | ------- | ------- |
+| `LOG_LEVEL` | Logging level | `INFO` | `DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL` |
+| `LOG_FORMAT` | Log output format | `json` | `json`, `console`, `plain` |
+| `LOG_FILE_PATH` | Path to log file (optional) | None | Any valid file path |
+| `OTEL_LOGS_EXPORT_MODE` | OpenTelemetry export mode | `file` | `file`, `otlp`, `both` |
+| `OTEL_ENDPOINT` | OpenTelemetry collector endpoint | `http://localhost:4317` | Any valid URL |
+| `OTEL_SERVICE_NAME` | Service name for OpenTelemetry | `python-app` | Any string |
+| `OTEL_EXPORT_TIMEOUT` | Export timeout in milliseconds | `30000` | Any positive integer |
+
+#### Usage Examples
+
+```bash
+# Local file logging only
+export LOG_FILE_PATH="/var/log/myapp.log"
+export OTEL_LOGS_EXPORT_MODE="file"
+
+# OTLP export only
+export OTEL_LOGS_EXPORT_MODE="otlp"
+export OTEL_ENDPOINT="http://otel-collector:4317"
+export OTEL_SERVICE_NAME="my-service"
+
+# Both file and OTLP export
+export OTEL_LOGS_EXPORT_MODE="both"
+export LOG_FILE_PATH="/var/log/myapp.log"
+export OTEL_ENDPOINT="http://otel-collector:4317"
+
+# Development mode with console output
+export LOG_LEVEL="DEBUG"
+export LOG_FORMAT="console"
+```
+
+#### Code Example
+
+```python
+from test_project.utils.logger import get_logger, setup_application_logging
+
+# Basic usage
+logger = get_logger("my_module")
+logger.info("Application started", version="1.0.0")
+
+# With application setup
+app_logger = setup_application_logging("my_app", environment="production")
+app_logger.error("Error occurred", error_code="E001")
+
+# Context binding
+user_logger = logger.bind(user_id="user123", request_id="req456")
+user_logger.info("User action", action="login")
 ```
 
 ### Documentation
