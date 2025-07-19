@@ -25,35 +25,30 @@ jobs:
       uses: astral-sh/setup-uv@v6
       with:
         version: "latest"
+        activate-environment: true
 
     - name: Install dependencies
       run: |
-        uv venv
         uv sync --extra dev
 
     - name: Run linting
       run: |
-        source .venv/bin/activate
         nox -s lint
 
     - name: Run formatting check
       run: |
-        source .venv/bin/activate
         nox -s format_code
 
     - name: Run type checking
       run: |
-        source .venv/bin/activate
         nox -s typing
 
     - name: Run tests
       run: |
-        source .venv/bin/activate
         nox -s test
 
     - name: Run security checks
       run: |
-        source .venv/bin/activate
         nox -s security
 
   docs:
@@ -72,14 +67,12 @@ jobs:
       uses: astral-sh/setup-uv@v6
       with:
         version: "latest"
+        activate-environment: true
 
     - name: Install dependencies
       run: |
-        uv venv
-        source .venv/bin/activate
         uv sync --all-extras
 
     - name: Build documentation
       run: |
-        source .venv/bin/activate
         nox -s docs
