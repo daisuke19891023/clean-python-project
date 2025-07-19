@@ -20,7 +20,7 @@ diff-cover==9.3.2
     # via test-project-alpha (pyproject.toml)
 execnet==2.1.1
     # via pytest-xdist
-freezegun==1.5.2
+freezegun==1.5.3
     # via test-project-alpha (pyproject.toml)
 ghp-import==2.1.0
     # via mkdocs
