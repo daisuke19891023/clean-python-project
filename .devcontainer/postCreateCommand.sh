@@ -71,8 +71,14 @@ fi
 
 # Git設定
 echo "Setting up Git configuration..."
-git config --global user.name "DevContainer User"
-git config --global user.email "devcontainer@example.com"
+if [ -n "$GIT_USER_NAME" ] && [ -n "$GIT_USER_EMAIL" ]; then
+    git config --global user.name "$GIT_USER_NAME"
+    git config --global user.email "$GIT_USER_EMAIL"
+else
+    echo "GIT_USER_NAME and/or GIT_USER_EMAIL not set. Using default git config."
+    git config --global user.name "DevContainer User"
+    git config --global user.email "devcontainer@example.com"
+fi
 git config --global init.defaultBranch main
 
 # Create useful aliases
@@ -98,9 +104,18 @@ alias gc='git commit'
 alias gp='git push'
 alias gl='git log --oneline'
 
+# AI CLI aliases
+alias claude='claude-code'
+alias gem='gemini'
+
 # Development aliases
 alias runserver='python -m http.server 8000'
 alias jnb='jupyter notebook --ip=0.0.0.0 --no-browser --allow-root'
+
+# Activate Python virtual environment automatically
+if [ -d ".venv/bin" ]; then
+  echo 'export PATH="/workspace/.venv/bin:$PATH"' >> ~/.zshrc
+fi
 
 EOF
 

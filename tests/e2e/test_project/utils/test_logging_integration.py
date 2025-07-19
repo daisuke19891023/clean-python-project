@@ -32,7 +32,9 @@ class TestLoggingIntegration:
 
             # Configure logging with JSON output
             configure_logging(
-                log_level="INFO", log_format="json", log_file=str(log_file)
+                log_level="INFO",
+                log_format="json",
+                log_file=str(log_file),
             )
 
             logger = get_logger("test_module")
@@ -92,7 +94,6 @@ class TestLoggingIntegration:
 
     def test_performance_logging_workflow(self) -> None:
         """Test performance logging decorator workflow."""
-
         configure_logging(log_level="DEBUG", log_format="json")
         logger = get_logger("perf_test")
 

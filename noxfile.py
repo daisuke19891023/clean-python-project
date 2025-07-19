@@ -64,7 +64,7 @@ def lock(session: Session) -> None:
 def lint(session: Session) -> None:
     """Run linting with Ruff."""
     session.install("-c", constraints(session).as_posix(), "ruff")
-    session.run("ruff", "check")
+    session.run("ruff", "check", "--fix")
 
 
 @nox.session(python=["3.12"], tags=["format"])
@@ -97,7 +97,7 @@ def test(session: Session) -> None:
     if not has_test_targets():
         session.skip("No test targets found in src directory")
 
-    session.install("-c", constraints(session).as_posix(), ".[tests]")
+    session.install("-c", constraints(session).as_posix(), ".[dev]")
     session.run("pytest", "--cov=src", f"--cov-fail-under={COVER_MIN}")
 
 
