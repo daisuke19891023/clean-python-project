@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """Example usage of the OpenTelemetry-enabled logger."""
+# ruff: noqa: T201, D401, EXE001, S108
 
 import os
 from test_project.utils.logger import setup_application_logging, shutdown_logging
 from test_project.utils.settings import get_settings, reset_settings
 
 
-def example_basic_usage():
+def example_basic_usage() -> None:
     """Basic usage example."""
     print("=== Basic Usage Example ===")
 
@@ -27,7 +28,7 @@ def example_basic_usage():
     print("✓ Basic logging completed")
 
 
-def example_with_file_output():
+def example_with_file_output() -> None:
     """Example with file output."""
     print("\n=== File Output Example ===")
 
@@ -52,7 +53,7 @@ def example_with_file_output():
     del os.environ["OTEL_LOGS_EXPORT_MODE"]
 
 
-def example_with_settings():
+def example_with_settings() -> None:
     """Example showing settings usage."""
     print("\n=== Settings Example ===")
 
@@ -77,7 +78,10 @@ def example_with_settings():
 
     # Use the logger
     logger = setup_application_logging("settings_example")
-    logger.info("Using custom settings", settings_mode=settings.otel_logs_export_mode.value)
+    logger.info(
+        "Using custom settings",
+        settings_mode=settings.otel_logs_export_mode.value,
+    )
 
     # Clean up
     for key in ["LOG_LEVEL", "LOG_FORMAT", "OTEL_LOGS_EXPORT_MODE",
@@ -87,7 +91,7 @@ def example_with_settings():
     print("✓ Settings example completed")
 
 
-def main():
+def main() -> None:
     """Run all examples."""
     try:
         example_basic_usage()

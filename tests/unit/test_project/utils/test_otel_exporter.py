@@ -165,7 +165,7 @@ class TestOTLPLogExporter:
         mock_logger.warning.assert_called_once()
         call_args = mock_logger.warning.call_args
         assert call_args.args[0] == "Test OTLP message"
-        assert call_args.kwargs["extra"]["user_id"] == "user123"
+        assert call_args.kwargs["extra"]["attributes"]["user_id"] == "user123"
 
     @patch("test_project.utils.otel_exporter.OTLPLogsExporter")
     def test_otlp_exporter_shutdown(self, mock_otlp_class: MagicMock) -> None:
@@ -173,12 +173,18 @@ class TestOTLPLogExporter:
         mock_otlp = MagicMock()
         mock_otlp_class.return_value = mock_otlp
 
-        exporter = OTLPLogExporter(endpoint="http://localhost:4317")
-        exporter.shutdown()
+        # Need to mock LoggerProvider to test shutdown
+        with patch(
+            "test_project.utils.otel_exporter.LoggerProvider",
+        ) as mock_provider_class:
+            mock_provider = MagicMock()
+            mock_provider_class.return_value = mock_provider
 
-        # Verify shutdown was called on provider
-        assert exporter.provider is not None
-        exporter.provider.shutdown.assert_called_once()
+            exporter = OTLPLogExporter(endpoint="http://localhost:4317")
+            exporter.shutdown()
+
+            # Verify shutdown was called on provider
+            mock_provider.shutdown.assert_called_once()
 
 
 class TestLogExporterFactory:

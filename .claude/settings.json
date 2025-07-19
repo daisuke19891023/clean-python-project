@@ -32,11 +32,10 @@
         "PostToolUse": [
             {
                 "matcher": "Write|Edit|MultiEdit",
-                "file_path": "**/*.py",
                 "hooks": [
                     {
                         "type": "command",
-                        "command": ".claude/hooks/python_quality_check.sh ${file_path}",
+                        "command": "/workspace/.claude/hooks/python_quality_check.sh",
                         "decision": "block"
                     }
                 ]

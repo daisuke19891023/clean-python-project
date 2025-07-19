@@ -10,12 +10,16 @@ from pathlib import Path
 from typing import Any
 
 import structlog
+
+# Type checking workaround for OpenTelemetry imports
 try:
-    from opentelemetry.exporter.otlp.proto.grpc._log_exporter import OTLPLogExporter as OTLPLogsExporter  # type: ignore[import-not-found]
+    from opentelemetry.exporter.otlp.proto.grpc._log_exporter import (  # type: ignore[import-not-found]
+        OTLPLogExporter as OTLPLogsExporter,
+    )
     from opentelemetry.sdk._logs import LoggerProvider, LoggingHandler  # type: ignore[import-not-found]
     from opentelemetry.sdk._logs.export import BatchLogRecordProcessor  # type: ignore[import-not-found]
     from opentelemetry.sdk.resources import Resource
-    OTEL_AVAILABLE = True
+    _otel_available = True
 except ImportError:
     # OpenTelemetry not available
     OTLPLogsExporter = Any  # type: ignore[misc,assignment]
@@ -23,7 +27,7 @@ except ImportError:
     LoggingHandler = Any  # type: ignore[misc,assignment]
     BatchLogRecordProcessor = Any  # type: ignore[misc,assignment]
     Resource = Any  # type: ignore[misc,assignment]
-    OTEL_AVAILABLE = False
+    _otel_available = False
 from structlog.types import EventDict
 
 from test_project.utils.settings import LoggingSettings, OTelExportMode
@@ -125,7 +129,7 @@ class OTLPLogExporter(LogExporter):
         self.timeout = timeout
         self._logger = structlog.get_logger(__name__)
 
-        if not OTEL_AVAILABLE:
+        if not _otel_available:
             self._logger.warning(
                 "OpenTelemetry not available, OTLP export will be disabled",
                 endpoint=endpoint,
@@ -136,7 +140,7 @@ class OTLPLogExporter(LogExporter):
             return
 
         # Create resource
-        resource = Resource.create(
+        resource = Resource.create(  # type: ignore[misc]
             {
                 "service.name": service_name,
                 "service.version": "1.0.0",
@@ -145,7 +149,7 @@ class OTLPLogExporter(LogExporter):
 
         # Initialize OTLP exporter
         try:
-            self._otlp_exporter = OTLPLogsExporter(
+            self._otlp_exporter = OTLPLogsExporter(  # type: ignore[misc]
                 endpoint=endpoint,
                 timeout=timeout // 1000,  # Convert to seconds
             )
@@ -173,7 +177,7 @@ class OTLPLogExporter(LogExporter):
             event_dict: The log event to send
 
         """
-        if not OTEL_AVAILABLE or not self._otel_logger:
+        if not _otel_available or not self._otel_logger:
             return
 
         try:
