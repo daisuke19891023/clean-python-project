@@ -29,6 +29,7 @@ class TestLogExporterInterface:
 
     def test_log_exporter_requires_export_method(self) -> None:
         """Test that subclasses must implement export method."""
+
         class IncompleteExporter(LogExporter):
             pass
 
@@ -37,6 +38,7 @@ class TestLogExporterInterface:
 
     def test_log_exporter_requires_shutdown_method(self) -> None:
         """Test that subclasses must implement shutdown method."""
+
         class IncompleteExporter(LogExporter):
             def export(self, event_dict: EventDict) -> None:
                 pass
@@ -112,32 +114,66 @@ class TestFileLogExporter:
 class TestOTLPLogExporter:
     """Test OTLPLogExporter implementation."""
 
-    @patch("test_project.utils.otel_exporter.OTLPLogsExporter")
-    def test_otlp_exporter_initialization(self, mock_otlp_class: MagicMock) -> None:
+    def test_otlp_exporter_initialization(self) -> None:
         """Test OTLPLogExporter initialization."""
-        mock_otlp = MagicMock()
-        mock_otlp_class.return_value = mock_otlp
+        with (
+            patch("test_project.utils.otel_exporter._otel_available", new=True),
+            patch(
+                "test_project.utils.otel_exporter.socket.socket",
+            ) as mock_socket_class,
+            patch("test_project.utils.otel_exporter.Resource") as mock_resource_class,
+            patch(
+                "test_project.utils.otel_exporter.BatchLogRecordProcessor",
+            ) as mock_batch_processor_class,
+            patch(
+                "test_project.utils.otel_exporter.LoggerProvider",
+            ) as mock_logger_provider_class,
+            patch(
+                "test_project.utils.otel_exporter.OTLPLogsExporter",
+            ) as mock_otlp_class,
+        ):
+            # Mock successful connection
+            mock_socket = MagicMock()
+            mock_socket.connect_ex.return_value = 0  # Success
+            mock_socket_class.return_value = mock_socket
 
-        _ = OTLPLogExporter(
-            endpoint="http://localhost:4317",
-            service_name="test-service",
-            timeout=5000,
-        )
+            # Setup other mocks
+            mock_otlp = MagicMock()
+            mock_otlp_class.return_value = mock_otlp
+            mock_provider = MagicMock()
+            mock_logger_provider_class.return_value = mock_provider
+            mock_processor = MagicMock()
+            mock_batch_processor_class.return_value = mock_processor
+            mock_resource = MagicMock()
+            mock_resource_class.create.return_value = mock_resource
 
-        # Verify OTLP exporter was created with correct parameters
-        mock_otlp_class.assert_called_once()
-        call_kwargs = mock_otlp_class.call_args.kwargs
-        assert call_kwargs["endpoint"] == "http://localhost:4317"
-        assert call_kwargs["timeout"] == 5
+            _ = OTLPLogExporter(
+                endpoint="http://localhost:4317",
+                service_name="test-service",
+                timeout=5000,
+            )
 
+            # Verify OTLP exporter was created with correct parameters
+            mock_otlp_class.assert_called_once()
+            call_kwargs = mock_otlp_class.call_args.kwargs
+            assert call_kwargs["endpoint"] == "http://localhost:4317"
+            assert call_kwargs["timeout"] == 5
+
+    @patch("test_project.utils.otel_exporter.socket.socket")
     @patch("test_project.utils.otel_exporter.OTLPLogsExporter")
     @patch("test_project.utils.otel_exporter.LoggerProvider")
     def test_otlp_exporter_export(
         self,
         mock_logger_provider_class: MagicMock,
         mock_otlp_class: MagicMock,
+        mock_socket_class: MagicMock,
     ) -> None:
         """Test OTLPLogExporter export functionality."""
+        # Mock successful connection
+        mock_socket = MagicMock()
+        mock_socket.connect_ex.return_value = 0  # Success
+        mock_socket_class.return_value = mock_socket
+
         # Setup mocks
         mock_otlp = MagicMock()
         mock_otlp_class.return_value = mock_otlp
@@ -167,9 +203,19 @@ class TestOTLPLogExporter:
         assert call_args.args[0] == "Test OTLP message"
         assert call_args.kwargs["extra"]["attributes"]["user_id"] == "user123"
 
+    @patch("test_project.utils.otel_exporter.socket.socket")
     @patch("test_project.utils.otel_exporter.OTLPLogsExporter")
-    def test_otlp_exporter_shutdown(self, mock_otlp_class: MagicMock) -> None:
+    def test_otlp_exporter_shutdown(
+        self,
+        mock_otlp_class: MagicMock,
+        mock_socket_class: MagicMock,
+    ) -> None:
         """Test OTLPLogExporter shutdown."""
+        # Mock successful connection
+        mock_socket = MagicMock()
+        mock_socket.connect_ex.return_value = 0  # Success
+        mock_socket_class.return_value = mock_socket
+
         mock_otlp = MagicMock()
         mock_otlp_class.return_value = mock_otlp
 

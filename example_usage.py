@@ -3,6 +3,7 @@
 # ruff: noqa: T201, D401, EXE001, S108
 
 import os
+
 from test_project.utils.logger import setup_application_logging, shutdown_logging
 from test_project.utils.settings import get_settings, reset_settings
 
@@ -84,8 +85,14 @@ def example_with_settings() -> None:
     )
 
     # Clean up
-    for key in ["LOG_LEVEL", "LOG_FORMAT", "OTEL_LOGS_EXPORT_MODE",
-                "OTEL_ENDPOINT", "OTEL_SERVICE_NAME", "LOG_FILE_PATH"]:
+    for key in [
+        "LOG_LEVEL",
+        "LOG_FORMAT",
+        "OTEL_LOGS_EXPORT_MODE",
+        "OTEL_ENDPOINT",
+        "OTEL_SERVICE_NAME",
+        "LOG_FILE_PATH",
+    ]:
         os.environ.pop(key, None)
 
     print("✓ Settings example completed")

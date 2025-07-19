@@ -5,32 +5,25 @@ exporting logs to various destinations including local files and OTLP endpoints.
 """
 
 import json
+import socket
+import urllib.parse
 from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Any
 
 import structlog
-
-# Type checking workaround for OpenTelemetry imports
-try:
-    from opentelemetry.exporter.otlp.proto.grpc._log_exporter import (  # type: ignore[import-not-found]
-        OTLPLogExporter as OTLPLogsExporter,
-    )
-    from opentelemetry.sdk._logs import LoggerProvider, LoggingHandler  # type: ignore[import-not-found]
-    from opentelemetry.sdk._logs.export import BatchLogRecordProcessor  # type: ignore[import-not-found]
-    from opentelemetry.sdk.resources import Resource
-    _otel_available = True
-except ImportError:
-    # OpenTelemetry not available
-    OTLPLogsExporter = Any  # type: ignore[misc,assignment]
-    LoggerProvider = Any  # type: ignore[misc,assignment]
-    LoggingHandler = Any  # type: ignore[misc,assignment]
-    BatchLogRecordProcessor = Any  # type: ignore[misc,assignment]
-    Resource = Any  # type: ignore[misc,assignment]
-    _otel_available = False
 from structlog.types import EventDict
 
 from test_project.utils.settings import LoggingSettings, OTelExportMode
+
+# Type checking workaround for OpenTelemetry imports
+# Lazy imports to avoid import-time freezing issues
+OTLPLogsExporter = Any  # type: ignore[misc,assignment]
+LoggerProvider = Any  # type: ignore[misc,assignment]
+LoggingHandler = Any  # type: ignore[misc,assignment]
+BatchLogRecordProcessor = Any  # type: ignore[misc,assignment]
+Resource = Any  # type: ignore[misc,assignment]
+_otel_available = None  # Will be determined when first needed
 
 
 class LogExporter(ABC):
@@ -129,6 +122,30 @@ class OTLPLogExporter(LogExporter):
         self.timeout = timeout
         self._logger = structlog.get_logger(__name__)
 
+        # Check if OpenTelemetry is available (lazy loading)
+        global _otel_available  # noqa: PLW0603
+        global OTLPLogsExporter  # noqa: PLW0603
+        global LoggerProvider  # noqa: PLW0603
+        global BatchLogRecordProcessor  # noqa: PLW0603
+        global Resource  # noqa: PLW0603
+
+        if _otel_available is None:
+            try:
+                from opentelemetry.exporter.otlp.proto.grpc._log_exporter import (  # type: ignore[import-not-found]
+                    OTLPLogExporter as OTLPLogsExporter,
+                )
+                from opentelemetry.sdk._logs import (
+                    LoggerProvider,  # type: ignore[import-not-found]
+                )
+                from opentelemetry.sdk._logs.export import (
+                    BatchLogRecordProcessor,  # type: ignore[import-not-found]
+                )
+                from opentelemetry.sdk.resources import Resource
+
+                _otel_available = True
+            except ImportError:
+                _otel_available = False
+
         if not _otel_available:
             self._logger.warning(
                 "OpenTelemetry not available, OTLP export will be disabled",
@@ -149,6 +166,24 @@ class OTLPLogExporter(LogExporter):
 
         # Initialize OTLP exporter
         try:
+            # For gRPC endpoints, extract host and port
+            parsed = urllib.parse.urlparse(endpoint)
+            host = parsed.hostname or "localhost"
+            port = parsed.port or 4317
+
+            # Quick connectivity check with very short timeout
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            sock.settimeout(0.1)  # 100ms timeout for connection check
+            try:
+                result = sock.connect_ex((host, port))
+                sock.close()
+                if result != 0:
+                    msg = f"Cannot connect to {host}:{port}"
+                    raise ConnectionError(msg)
+            except (TimeoutError, socket.gaierror, OSError) as e:
+                msg = f"Cannot connect to {host}:{port}: {e}"
+                raise ConnectionError(msg) from e
+
             self._otlp_exporter = OTLPLogsExporter(  # type: ignore[misc]
                 endpoint=endpoint,
                 timeout=timeout // 1000,  # Convert to seconds
@@ -168,7 +203,10 @@ class OTLPLogExporter(LogExporter):
                 endpoint=endpoint,
                 error=str(e),
             )
-            raise
+            # Don't raise, just mark as unavailable
+            self._provider = None
+            self._otel_logger = None
+            self._otlp_exporter = None
 
     def export(self, event_dict: EventDict) -> None:
         """Export log event to OTLP endpoint.
@@ -187,7 +225,8 @@ class OTLPLogExporter(LogExporter):
 
             # Remove internal fields and prepare attributes
             attributes = {
-                k: v for k, v in event_dict.items()
+                k: v
+                for k, v in event_dict.items()
                 if k not in {"event", "level", "_record", "_from_structlog"}
             }
 
@@ -196,7 +235,9 @@ class OTLPLogExporter(LogExporter):
 
             # Log using OpenTelemetry logger
             log_method = getattr(
-                self._otel_logger, level.lower(), self._otel_logger.info,
+                self._otel_logger,
+                level.lower(),
+                self._otel_logger.info,
             )
             log_method(message, extra={"attributes": attributes})
 
@@ -215,7 +256,7 @@ class OTLPLogExporter(LogExporter):
     def shutdown(self) -> None:
         """Shutdown the OTLP exporter."""
         try:
-            if hasattr(self, "_provider"):
+            if hasattr(self, "_provider") and self._provider is not None:
                 self._provider.shutdown()
         except Exception as e:
             self._logger.error("Error during OTLP exporter shutdown", error=str(e))
@@ -242,10 +283,14 @@ class LogExporterFactory:
         exporters: list[LogExporter] = []
 
         # Create file exporter if needed
-        if settings.otel_logs_export_mode in (
-            OTelExportMode.FILE,
-            OTelExportMode.BOTH,
-        ) and settings.log_file_path:
+        if (
+            settings.otel_logs_export_mode
+            in (
+                OTelExportMode.FILE,
+                OTelExportMode.BOTH,
+            )
+            and settings.log_file_path
+        ):
             exporters.append(FileLogExporter(settings.log_file_path))
 
         # Create OTLP exporter if needed
