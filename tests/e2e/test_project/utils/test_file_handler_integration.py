@@ -9,7 +9,7 @@ import structlog
 import yaml
 
 from test_project.utils.file_handler import FileHandler
-from test_project.utils.logger import get_logger, configure_logging
+from test_project.utils.logger import configure_logging, get_logger
 
 
 class TestFileHandlerLoggingIntegration:

@@ -97,7 +97,7 @@ def test(session: Session) -> None:
     if not has_test_targets():
         session.skip("No test targets found in src directory")
 
-    session.install("-c", constraints(session).as_posix(), ".[tests]")
+    session.install("-c", constraints(session).as_posix(), ".[dev]")
     session.run("pytest", "--cov=src", f"--cov-fail-under={COVER_MIN}")
 
 
