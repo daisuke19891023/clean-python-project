@@ -67,8 +67,8 @@ class MockOTLPServer:
         class Handler(BaseHTTPRequestHandler):
             received_data: ClassVar[list[bytes]] = server_instance.received_data
 
-            def do_POST(self) -> None:  # noqa: N802
-                """Handle POST requests."""
+            def do_post(self) -> None:
+                """Handle POST requests with PEP 8 compliant naming."""
                 content_length = int(self.headers.get("Content-Length", 0))
                 post_data = self.rfile.read(content_length)
                 self.received_data.append(post_data)
@@ -77,6 +77,10 @@ class MockOTLPServer:
                 self.send_header("Content-Type", "application/json")
                 self.end_headers()
                 self.wfile.write(b'{"success": true}')
+
+            def do_POST(self) -> None:
+                """Handle POST requests (required by BaseHTTPRequestHandler)."""
+                self.do_post()
 
             def log_message(self, format: str, *args: Any) -> None:  # noqa: A002
                 """Suppress server logging."""
