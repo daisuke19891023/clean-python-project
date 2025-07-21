@@ -86,7 +86,7 @@ pytest-cov==6.2.1
     # via test-project-alpha (pyproject.toml)
 pytest-mock==3.14.1
     # via test-project-alpha (pyproject.toml)
-pytest-xdist==3.7.0
+pytest-xdist==3.8.0
     # via test-project-alpha (pyproject.toml)
 python-dateutil==2.9.0.post0
     # via
